@@ -18,7 +18,8 @@
 
 @layer components {
   .btn-primary {
-    @apply inline-block bg-primary text-white px-8 py-3 rounded-full font-medium transition-colors duration-200 hover:bg-primary-hover;
+    @apply inline-block bg-primary px-8 py-3 rounded-full font-medium transition-colors duration-200 hover:bg-primary-hover;
+    color: #2D4659 !important;
   }
 
   .section-container {
@@ -26,7 +27,8 @@
   }
 
   .card {
-    @apply bg-card-bg rounded-lg;
-    box-shadow: 0 2px 12px rgba(0, 48, 64, 0.08);
+    @apply bg-card-bg rounded-xl;
+    box-shadow: 0 1px 8px rgba(45, 70, 89, 0.08);
+    border: 1px solid rgba(45, 70, 89, 0.08);
   }
 }

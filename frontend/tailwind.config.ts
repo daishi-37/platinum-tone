@@ -9,14 +9,15 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: "#003040",
-        "primary-hover": "#1a5068",
-        accent: "#4a9e8a",
-        "page-bg": "#f5f7f6",
-        "section-bg": "#eaf0f2",
+        primary: "#97d3c3",          // ミントグリーン
+        "primary-hover": "#7bbfae",  // ホバー（少し暗め）
+        accent: "#b8e3d8",           // ライトミント
+        "page-bg": "#f7fbfa",        // 薄いミントホワイト
+        "section-bg": "#edf6f3",     // ライトミントベージュ
         "card-bg": "#ffffff",
-        "text-main": "#2c3e3a",
-        "text-sub": "#6b8080",
+        "text-main": "#2D4659",      // ネイビーブルー
+        "text-sub": "#6a8699",       // ミュートブルーグレー
+        "sidebar-bg": "#2D4659",     // サイドバー用
       },
       fontFamily: {
         sans: ["Noto Sans JP", "Inter", "sans-serif"],
