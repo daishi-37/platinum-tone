@@ -81,15 +81,21 @@ export default function SidebarNav() {
 
       {/* SNS */}
       <div className="px-6 py-4 border-t border-white/10">
-        <p className="text-white/40 text-xs mb-3">SNS</p>
-        <div className="flex gap-3">
-          {['X', 'Instagram', 'YouTube'].map((sns) => (
+        <p className="text-white/40 text-xs mb-3">LINKS</p>
+        <div className="flex flex-col gap-2">
+          {[
+            { label: '仙台エリ X',    href: 'https://x.com/e_ringo' },
+            { label: '優希比呂 X',    href: 'https://x.com/hiroismneo_y' },
+            { label: 'グリーンノート HP', href: 'https://greennote-info.com/' },
+          ].map(({ label, href }) => (
             <a
-              key={sns}
-              href="#"
+              key={href}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-xs text-white/60 hover:text-white transition-colors border border-white/20 px-2 py-1 rounded"
             >
-              {sns}
+              {label}
             </a>
           ))}
         </div>
@@ -102,7 +108,7 @@ export default function SidebarNav() {
             href="/register"
             className="block bg-accent hover:bg-accent/80 text-white text-center py-3 rounded-full text-sm font-bold transition-colors"
           >
-            7日間無料で始める
+            今すぐ始める
           </Link>
           <p className="text-white/40 text-xs text-center mt-2">月額 ¥9,200（税込）</p>
         </div>

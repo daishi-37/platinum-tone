@@ -1,6 +1,16 @@
+'use client'
+
+import { useEffect } from 'react'
 import Link from 'next/link'
+import { useAuth } from '@/lib/auth-context'
 
 export default function BillingSuccessPage() {
+  const { refresh } = useAuth()
+
+  useEffect(() => {
+    refresh()
+  }, [refresh])
+
   return (
     <main className="flex items-center justify-center min-h-screen px-4">
       <div className="w-full max-w-md text-center">
@@ -8,13 +18,12 @@ export default function BillingSuccessPage() {
         <div className="text-6xl mb-6">🎉</div>
 
         <h1 className="text-2xl font-bold text-text-main mb-3">
-          7日間の無料トライアル開始！
+          ご登録ありがとうございます！
         </h1>
 
         <p className="text-text-sub text-sm leading-relaxed mb-8">
-          ご登録ありがとうございます。<br />
-          7日間のトライアル期間中は、すべてのコンテンツをご利用いただけます。<br />
-          トライアル終了後、月額 ¥9,200（税込）が自動で請求されます。
+          toneへようこそ。<br />
+          今すぐすべてのコンテンツをご利用いただけます。
         </p>
 
         <div className="card p-6 mb-6 text-left space-y-3">
@@ -32,7 +41,7 @@ export default function BillingSuccessPage() {
           </div>
           <div className="flex items-center gap-3 text-sm text-text-main">
             <span className="text-accent text-lg">✓</span>
-            <span>7日以内のキャンセルは無料</span>
+            <span>月二回の全体ミーティング（アーカイブあり）</span>
           </div>
         </div>
 

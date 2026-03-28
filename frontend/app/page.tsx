@@ -1,30 +1,12 @@
+import Image from "next/image";
+import HeroSection from "@/components/HeroSection";
+import PlanCTA from "@/components/PlanCTA";
+
 export default function Home() {
   return (
     <div>
 
-      {/* ヒーロー */}
-      <section className="relative bg-primary text-white">
-        <div
-          className="absolute inset-0 bg-cover bg-center opacity-20"
-          style={{ backgroundImage: "url('/images/hero-bg.jpg')" }}
-        />
-        <div className="relative z-10 flex flex-col items-center justify-center text-center px-8 py-28">
-          <p className="text-accent text-xs font-medium tracking-widest uppercase mb-4">
-            Voice Actor Online Academy
-          </p>
-          <h1 className="text-3xl sm:text-4xl font-bold leading-tight mb-6">
-            声優を目指す、<br />全ての人へ。
-          </h1>
-          <p className="text-white/80 leading-relaxed mb-8 max-w-lg">
-            どんな困難や試練があったとしても<br />
-            その道を進むため、学び続ける覚悟はあるか。<br />
-            <span className="text-accent font-bold text-xl">君ならできる！</span>
-          </p>
-          <a href="#register" className="btn-primary text-base px-10 py-4">
-            7日間無料で始める
-          </a>
-        </div>
-      </section>
+      <HeroSection />
 
       <div className="px-8 py-12 space-y-16">
 
@@ -33,7 +15,7 @@ export default function Home() {
           <p className="text-text-sub text-xs tracking-widest uppercase mb-2">About</p>
           <h2 className="text-2xl font-bold text-primary mb-4">
             グリーンノートを代表する声優が直接伝える、<br />
-            声優になるためのマインドとナレッジとスキル。
+            声優になるための『在り方』と『知識』と『技術』。
           </h2>
           <p className="text-text-sub leading-relaxed max-w-2xl">
             選択理論心理学を用いた声優育成オンラインアカデミー「tone」。<br />
@@ -50,24 +32,35 @@ export default function Home() {
               {
                 name: "仙台エリ",
                 role: "声優 / グリーンノート代表",
+                image: "/assets/images/sendaieri.webp",
                 works: ["『メダロット』甘酒アリカ", "『yes！プリキュア5GoGo！』ミルク/ミルキィローズ", "『GUNSLINGER GIRL』トリエラ", "『中二病でも恋がしたい！』小鳥遊十花", "『ガールズ&パンツァー』カエサル"],
                 bio: "6歳で児童劇団に入団。15歳でアニメ声優デビュー（デビュー作で主役）。2020年7月に声優事務所「グリーンノート」を設立。2026年、選択理論心理学を用いたクオリティー声優オンラインアカデミー「tone」を設立。",
               },
               {
                 name: "優希比呂",
-                role: "声優 / グリーンノート所属",
-                works: ["『新世紀エヴァンゲリオン』日向マコト", "『仙界伝 封神演義』太公望", "『アンジェリーク』マルセル"],
-                bio: "（プロフィール追記予定）",
+                role: "声優 / グリーンノート顧問",
+                image: "/assets/images/yuukihiro.webp",
+                works: ["『覇王大系リューナイト』アデュー・ウォルサム", "『ヴァイスクロイツ』オミ / 月夜野臣", "『新世紀エヴァンゲリオン』日向マコト", "『仙界伝 封神演義』太公望", "『アンジェリーク』マルセル"],
+                bio: "キャリアのスタートは舞台での芝居。次々と劇団を辞めていく仲間を見送りながら、勉強を続けた。その後、台詞の勉強を集中してやりたいことから声優養成所に移り、数々のアニメ作品に出演。",
               },
             ].map((p) => (
-              <div key={p.name} className="card p-6">
-                <div className="w-20 h-20 rounded-full bg-section-bg mx-auto mb-4" />
+              <div key={p.name} className="card overflow-hidden">
+                <div className="relative h-64" style={{ maxWidth: "210px", margin: "auto" }}>
+                  <Image
+                    src={p.image}
+                    alt={p.name}
+                    fill
+                    className="object-contain object-center"
+                  />
+                </div>
+                <div className="p-6">
                 <h3 className="text-lg font-bold text-primary text-center mb-0.5">{p.name}</h3>
                 <p className="text-text-sub text-xs text-center mb-3">{p.role}</p>
                 <ul className="text-xs text-text-sub space-y-1 mb-3">
                   {p.works.map((w) => <li key={w}>・{w}</li>)}
                 </ul>
                 <p className="text-xs text-text-main leading-relaxed">{p.bio}</p>
+                </div>
               </div>
             ))}
           </div>
@@ -77,20 +70,41 @@ export default function Home() {
         <section id="features">
           <p className="text-text-sub text-xs tracking-widest uppercase mb-2">What you can do</p>
           <h2 className="text-2xl font-bold text-primary mb-6">toneで出来ること</h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-4">
             {[
-              { title: "最先端の業界情報", desc: "全国どこにいても、最先端の声優業界情報を得ることができる。" },
-              { title: "月一全体ミーティング", desc: "月1回のミーティングで、講師2人から直接アドバイスをもらえる。（アーカイブあり）" },
-              { title: "Podcast配信", desc: "podcast「声優登竜門バックステージ」を聞くことができる。" },
-              { title: "動画レッスン", desc: "現場で活躍する声優も実践する基礎学習のやり方を動画で学べる。" },
+              { title: "最先端の業界情報", desc: "全国どこにいても、最先端の声優業界情報を得ることができる。", image: "/assets/images/features1.webp" },
+              { title: "月二回全体ミーティング", desc: "月2回のミーティングで、講師2人から直接アドバイスをもらえる。（アーカイブあり）", image: "/assets/images/features2.webp" },
+              { title: "Podcast配信", desc: "podcast「声優登竜門バックステージ」を聞くことができる。", image: "/assets/images/features3.webp" },
+              { title: "個別グループレッスンへの参加", desc: "オプション（別途料金）", image: "/assets/images/features4.webp" },
             ].map((item) => (
               <div key={item.title} className="card p-5">
-                <div className="w-8 h-8 rounded-full bg-accent/20 mb-3" />
+                <Image src={item.image} alt={item.title} width={56} height={56} className="mb-3" />
                 <h3 className="font-bold text-primary text-sm mb-1">{item.title}</h3>
                 <p className="text-xs text-text-sub leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
+        </section>
+
+        {/* toneに向いてる人 */}
+        <section>
+          <p className="text-text-sub text-xs tracking-widest uppercase mb-2">For You</p>
+          <h2 className="text-2xl font-bold text-primary mb-6">toneに向いてる人</h2>
+          <ul className="space-y-4 max-w-2xl">
+            {[
+              { main: "積極的に質問ができる方。", sub: "「問い」のないところに「答え」は訪れません。" },
+              { main: "なりたい自分を求めて選択し、目標を達成しようと努力し続けられる方。" },
+              { main: "我こそは原石であると、自分を信じることができる方。", sub: "または、そのような自分になりたいと求めている方。" },
+            ].map((item, i) => (
+              <li key={i} className="flex gap-4 items-start">
+                <span className="mt-1 w-6 h-6 rounded-full bg-primary text-white text-xs flex items-center justify-center flex-shrink-0">{i + 1}</span>
+                <div>
+                  <p className="text-sm font-bold text-primary leading-relaxed">{item.main}</p>
+                  {item.sub && <p className="text-xs text-text-sub mt-0.5">{item.sub}</p>}
+                </div>
+              </li>
+            ))}
+          </ul>
         </section>
 
         {/* プラン */}
@@ -110,40 +124,18 @@ export default function Home() {
                 </div>
               </div>
               <ul className="text-sm space-y-2 mb-5">
-                {["全デジタルコンテンツへのアクセス", "月一全体ミーティング（アーカイブ付き）", "会員限定Podcast・動画", "7日間無料トライアル"].map((f) => (
+                {["全デジタルコンテンツへのアクセス", "月二回全体ミーティング（アーカイブ付き）", "会員限定Podcast・動画"].map((f) => (
                   <li key={f} className="flex items-start gap-2 text-text-main">
                     <span className="text-accent mt-0.5">✓</span>{f}
                   </li>
                 ))}
               </ul>
-              <a id="register" href="#register" className="btn-primary block text-center">
-                7日間無料で始める
-              </a>
+              <PlanCTA />
             </div>
             <div className="card p-4">
               <h3 className="font-bold text-primary text-sm mb-1">オプション</h3>
               <p className="text-text-sub text-xs">グループレッスン・個人レッスン（詳細は別途お知らせ）</p>
             </div>
-          </div>
-        </section>
-
-        {/* 生徒の声 */}
-        <section>
-          <p className="text-text-sub text-xs tracking-widest uppercase mb-2">Voices</p>
-          <h2 className="text-2xl font-bold text-primary mb-6">生徒の声</h2>
-          <div className="grid sm:grid-cols-3 gap-4 max-w-3xl">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="card p-5">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-full bg-section-bg flex-shrink-0" />
-                  <div>
-                    <p className="text-sm font-bold text-primary">会員 {i}</p>
-                    <p className="text-xs text-text-sub">20代・女性</p>
-                  </div>
-                </div>
-                <p className="text-xs text-text-sub leading-relaxed">（入会後に追記予定）</p>
-              </div>
-            ))}
           </div>
         </section>
 
@@ -187,7 +179,7 @@ export default function Home() {
           </div>
           <nav className="flex flex-wrap justify-center gap-6 text-xs text-white/70 mb-6">
             <a href="#" className="hover:text-white transition-colors">プライバシーポリシー</a>
-            <a href="#" className="hover:text-white transition-colors">特定商取引法に基づく表記</a>
+            <a href="/tokusho" className="hover:text-white transition-colors">特定商取引法に基づく表記</a>
             <a href="#" className="hover:text-white transition-colors">お問い合わせ</a>
           </nav>
           <p className="text-center text-white/40 text-xs">© 2026 tone / GREEN NOTE All rights reserved.</p>

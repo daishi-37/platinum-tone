@@ -53,7 +53,7 @@ export default function RegisterPage() {
 
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-text-main">新規登録</h1>
-          <p className="text-text-sub text-sm mt-1">7日間無料でお試しいただけます</p>
+          <p className="text-text-sub text-sm mt-1">月額 ¥9,200（税込）</p>
         </div>
 
         <div className="card p-8">
@@ -134,7 +134,7 @@ export default function RegisterPage() {
               disabled={loading}
               className="w-full bg-accent hover:bg-accent/80 text-white py-3 rounded-full text-sm font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? '登録中...' : '7日間無料で始める'}
+              {loading ? '登録中...' : '今すぐ始める'}
             </button>
 
           </form>
