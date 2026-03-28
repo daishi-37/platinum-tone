@@ -41,4 +41,35 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    /** サブスクリプション有効（trialing）状態 */
+    public function trialing(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'stripe_customer_id'     => 'cus_test123',
+            'stripe_subscription_id' => 'sub_test123',
+            'subscription_status'    => 'trialing',
+            'trial_ends_at'          => now()->addDays(7),
+        ]);
+    }
+
+    /** サブスクリプション有効（active）状態 */
+    public function subscribed(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'stripe_customer_id'     => 'cus_test123',
+            'stripe_subscription_id' => 'sub_test123',
+            'subscription_status'    => 'active',
+        ]);
+    }
+
+    /** サブスクリプション解約済み */
+    public function cancelled(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'stripe_customer_id'     => 'cus_test123',
+            'stripe_subscription_id' => 'sub_test123',
+            'subscription_status'    => 'cancelled',
+        ]);
+    }
 }

@@ -13,12 +13,7 @@ use Stripe\Webhook;
 
 class StripeController extends Controller
 {
-    private StripeClient $stripe;
-
-    public function __construct()
-    {
-        $this->stripe = new StripeClient(config('services.stripe.secret'));
-    }
+    public function __construct(private StripeClient $stripe) {}
 
     /**
      * Stripe Checkout セッションを作成して URL を返す

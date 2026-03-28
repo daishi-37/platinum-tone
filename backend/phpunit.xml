@@ -31,5 +31,10 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <env name="STRIPE_KEY" value="pk_test_fake"/>
+        <env name="STRIPE_SECRET" value="sk_test_fake"/>
+        <env name="STRIPE_WEBHOOK_SECRET" value="whsec_testsecret"/>
+        <env name="STRIPE_PRICE_ID" value="price_test_fake"/>
+        <env name="FRONTEND_URL" value="http://localhost"/>
     </php>
 </phpunit>

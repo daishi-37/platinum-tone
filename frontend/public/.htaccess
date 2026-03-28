@@ -1,0 +1,18 @@
+RewriteEngine On
+RewriteBase /
+
+# 実在するファイル・ディレクトリはそのまま
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# 会員動的ルート: 実IDへのアクセスをプレースホルダーのシェルで処理
+# ブラウザのURLは変わらないのでuseParams()は正しいIDを取得できる
+RewriteRule ^members/lessons/([^/]+)/$ /members/lessons/_/index.html [L]
+RewriteRule ^members/podcast/([^/]+)/$ /members/podcast/_/index.html [L]
+RewriteRule ^members/blog/([^/]+)/$ /members/blog/_/index.html [L]
+
+# トレイリングスラッシュなしのアクセスはスラッシュ付きにリダイレクト
+RewriteRule ^members/lessons/([^/]+)$ /members/lessons/$1/ [R=301,L]
+RewriteRule ^members/podcast/([^/]+)$ /members/podcast/$1/ [R=301,L]
+RewriteRule ^members/blog/([^/]+)$ /members/blog/$1/ [R=301,L]
