@@ -41,7 +41,7 @@ export default function HeroSection() {
         style={{ opacity: slides[current] ? 1 : 0 }}
       />
       {/* コンテンツ（常に表示） */}
-      <div className="relative z-10 flex flex-col items-center justify-center text-center px-8 py-28">
+      <div className="relative z-10 flex flex-col items-center justify-center text-center px-6 py-16 md:py-28">
         <p className="text-accent text-xs font-medium tracking-widest uppercase mb-4">
           Voice Actor Online Academy
         </p>

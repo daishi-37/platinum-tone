@@ -22,14 +22,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### APIルート構造（backend/routes/api.php）
 
 ```
-/api/auth/           - 認証（登録・ログイン・パスワードリセット等）
-/api/blog/           - 公開ブログ
-/api/members/        - 要: auth:sanctum + subscribed
-  /lessons           - 動画レッスン（会員限定）
-  /podcast           - ポッドキャスト（会員限定）
-  /blog              - 会員限定ブログ
-/api/billing/        - Stripeチェックアウト・ポータル・Webhook
+/api/auth/                        - 認証（登録・ログイン・パスワードリセット等）
+/api/blog/                        - 公開ブログ
+/api/members/                     - 要: auth:sanctum + subscribed
+  /lessons                        - 動画レッスン（会員限定）
+  /lessons/{id}
+  /podcast                        - ポッドキャスト（会員限定）
+  /podcast/{id}
+  /podcast/{id}/stream            - 音声ストリーミング（保護済み）
+  /blog                           - 会員限定ブログ
+/api/billing/                     - Stripeチェックアウト・ポータル・Webhook
 ```
+
+`subscribed` ミドルウェアは `backend/bootstrap/app.php` でエイリアス登録済み（実体: `RequireSubscription`）。メール認証フローは `backend/routes/web.php` で処理し、確認後はフロントエンドURLにリダイレクト。
 
 ## 開発コマンド
 
@@ -87,6 +92,7 @@ php artisan db:seed
 | 用途 | クラス | カラーコード |
 |------|--------|-------------|
 | プライマリ | `primary` | `#97d3c3`（ミントグリーン） |
+| プライマリホバー | `primary-hover` | `#7bbfae`（ダークミント） |
 | サイドバー背景 | `sidebar` | `#2D4659`（ネイビー） |
 | ページ背景 | `page-bg` | `#f7fbfa`（薄いミント白） |
 
@@ -94,7 +100,7 @@ php artisan db:seed
 
 ## フロントエンドレイアウト
 
-ルートレイアウト（`frontend/app/layout.tsx`）：左固定サイドバー（w-64）+ メインコンテンツ領域。サイドバーは `SidebarNav` コンポーネント。
+ルートレイアウト（`frontend/app/layout.tsx`）：`Sidebar` コンポーネントを使用。デスクトップ（md以上）は左固定サイドバー（w-64）、モバイルは上部固定ヘッダー（h-14）＋ハンバーガータップでスライドインするドロワー。ナビ内容は `SidebarNav` コンポーネントが担当。
 
 会員限定ページは `RequireMember` コンポーネントでラップしてアクセス制御。
 

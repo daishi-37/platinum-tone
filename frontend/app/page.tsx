@@ -8,7 +8,7 @@ export default function Home() {
 
       <HeroSection />
 
-      <div className="px-8 py-12 space-y-16">
+      <div className="px-4 sm:px-8 py-10 sm:py-12 space-y-16">
 
         {/* サービス紹介 */}
         <section id="about">
@@ -172,7 +172,7 @@ export default function Home() {
 
       {/* フッター */}
       <footer className="bg-primary text-white py-10 mt-8">
-        <div className="px-8">
+        <div className="px-4 sm:px-8">
           <div className="text-center mb-6">
             <p className="text-2xl font-bold tracking-widest mb-1">tone</p>
             <p className="text-white/60 text-xs">声優オンラインアカデミー</p>

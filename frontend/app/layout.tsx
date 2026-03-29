@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
-import SidebarNav from "@/components/SidebarNav";
+import Sidebar from "@/components/Sidebar";
 
 export const metadata: Metadata = {
   title: "tone | 声優オンラインアカデミー",
@@ -18,24 +18,12 @@ export default function RootLayout({
       <body className="antialiased flex min-h-screen bg-page-bg">
         <AuthProvider>
 
-          {/* ─── 左固定サイドバー ─── */}
-          <aside className="w-64 fixed left-0 top-0 bottom-0 bg-sidebar-bg text-white flex flex-col overflow-y-auto z-40 shrink-0">
-
-            {/* ロゴ */}
-            <div className="px-6 py-8 border-b border-white/10">
-              <a href="/" className="block">
-                <p className="text-2xl font-bold tracking-widest">tone</p>
-                <p className="text-white/50 text-xs mt-1">声優オンラインアカデミー</p>
-              </a>
-            </div>
-
-            {/* ナビ・SNS・CTA（ログイン状態に応じて切り替わる） */}
-            <SidebarNav />
-
-          </aside>
+          {/* サイドバー（デスクトップ固定 + モバイルドロワー） */}
+          <Sidebar />
 
           {/* ─── メインコンテンツ ─── */}
-          <div className="ml-64 flex-1 min-w-0">
+          {/* モバイル: 上部ヘッダー分の padding-top、デスクトップ: サイドバー分の margin-left */}
+          <div className="flex-1 min-w-0 pt-14 md:pt-0 md:ml-64">
             {children}
           </div>
 
