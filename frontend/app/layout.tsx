@@ -6,6 +6,14 @@ import Sidebar from "@/components/Sidebar";
 export const metadata: Metadata = {
   title: "tone | 声優オンラインアカデミー",
   description: "声優を目指す全ての人へ。グリーンノートを代表する声優が直接伝える、声優になるためのマインドとナレッジとスキル。",
+  icons: {
+    icon: "/assets/images/favicon.png",
+  },
+  openGraph: {
+    title: "tone | 声優オンラインアカデミー",
+    description: "声優を目指す全ての人へ。グリーンノートを代表する声優が直接伝える、声優になるためのマインドとナレッジとスキル。",
+    images: [{ url: "https://tone-ac.com/assets/images/ogp_image.jpg" }],
+  },
 };
 
 export default function RootLayout({

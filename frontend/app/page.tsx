@@ -18,7 +18,7 @@ export default function Home() {
             声優になるための『在り方』と『知識』と『技術』。
           </h2>
           <p className="text-text-sub leading-relaxed max-w-2xl">
-            選択理論心理学を用いた声優育成オンラインアカデミー「tone」。<br />
+            選択理論心理学を用いた声優オンラインアカデミー「tone」。<br />
             全国どこにいても、現役声優から直接学べる環境を提供します。
           </p>
         </section>
@@ -72,9 +72,9 @@ export default function Home() {
           <h2 className="text-2xl font-bold text-primary mb-6">toneで出来ること</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-4">
             {[
-              { title: "最先端の業界情報", desc: "全国どこにいても、最先端の声優業界情報を得ることができる。", image: "/assets/images/features1.webp" },
-              { title: "月二回全体ミーティング", desc: "月2回のミーティングで、講師2人から直接アドバイスをもらえる。（アーカイブあり）", image: "/assets/images/features2.webp" },
-              { title: "Podcast配信", desc: "podcast「声優登竜門バックステージ」を聞くことができる。", image: "/assets/images/features3.webp" },
+              { title: "最先端の業界情報", desc: "全国どこにいても、最先端の声優業界情報を得ることができます。", image: "/assets/images/features1.webp" },
+              { title: "月二回全体ミーティング", desc: "月2回のミーティングで、講師2人から直接アドバイスをもらえます。（アーカイブあり）", image: "/assets/images/features2.webp" },
+              { title: "Podcast配信", desc: "podcast「声優登竜門バックステージ」を聞くことができます。", image: "/assets/images/features3.webp" },
               { title: "個別グループレッスンへの参加", desc: "オプション（別途料金）", image: "/assets/images/features4.webp" },
             ].map((item) => (
               <div key={item.title} className="card p-5">
@@ -93,7 +93,7 @@ export default function Home() {
           <ul className="space-y-4 max-w-2xl">
             {[
               { main: "積極的に質問ができる方。", sub: "「問い」のないところに「答え」は訪れません。" },
-              { main: "なりたい自分を求めて選択し、目標を達成しようと努力し続けられる方。" },
+              { main: "なりたい未来を求めて選択し、目標を達成しようと努力し続けられる方。", sub: "目標を設定し、未来を決めるのは今の自分です。" },
               { main: "我こそは原石であると、自分を信じることができる方。", sub: "または、そのような自分になりたいと求めている方。" },
             ].map((item, i) => (
               <li key={i} className="flex gap-4 items-start">
