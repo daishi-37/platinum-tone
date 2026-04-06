@@ -1,4 +1,18 @@
-.PHONY: setup up down restart logs shell-php shell-frontend migrate seed
+.PHONY: setup up down restart logs shell-php shell-frontend migrate seed \
+        deploy deploy-frontend deploy-backend
+
+# ─────────────────────────────────────────────
+# デプロイ設定
+# ─────────────────────────────────────────────
+SSH_HOST = daishi37x@daishi37x.xsrv.jp
+SSH_PORT = 10022
+SSH_KEY  = ~/.ssh/keys/daishi37x.key
+SSH_CMD  = ssh -p $(SSH_PORT) -i $(SSH_KEY) $(SSH_HOST)
+RSYNC    = rsync -avz --progress -e "ssh -p $(SSH_PORT) -i $(SSH_KEY)"
+
+REMOTE_FRONTEND    = $(SSH_HOST):~/tone-ac.com/public_html
+REMOTE_BACKEND     = $(SSH_HOST):~/tone-ac.com/laravel
+REMOTE_BACKEND_PUB = $(SSH_HOST):~/tone-ac.com/public_html/api
 
 # ─────────────────────────────────────────────
 # 初回セットアップ（Docker 起動後に一度だけ実行）
@@ -66,3 +80,33 @@ cache-clear:
 	docker compose exec php php artisan config:clear
 	docker compose exec php php artisan route:clear
 	docker compose exec php php artisan view:clear
+
+# ─────────────────────────────────────────────
+# デプロイ（本番）
+# ─────────────────────────────────────────────
+deploy: deploy-backend deploy-frontend
+
+deploy-frontend:
+	@echo "==> フロントエンドをビルド..."
+	cd frontend && NEXT_PUBLIC_API_URL=https://api.tone-ac.com npm run build
+	@echo "==> サーバーに転送..."
+	$(RSYNC) --delete ./frontend/out/ $(REMOTE_FRONTEND)/
+	@echo "✓ フロントエンドのデプロイ完了"
+
+deploy-backend:
+	@echo "==> Composerで依存関係をインストール..."
+	cd backend && composer install --no-dev --optimize-autoloader
+	@echo "==> Laravelアプリをサーバーに転送..."
+	$(RSYNC) \
+		--exclude='.env' \
+		--exclude='.git' \
+		--exclude='public/' \
+		--exclude='storage/app/*' \
+		--exclude='storage/logs/*' \
+		--exclude='tests/' \
+		./backend/ $(REMOTE_BACKEND)/
+	@echo "==> public/ を転送（index.phpは除外）..."
+	$(RSYNC) --exclude='index.php' ./backend/public/ $(REMOTE_BACKEND_PUB)/
+	@echo "==> マイグレーション・キャッシュ..."
+	$(SSH_CMD) "cd ~/tone-ac.com/laravel && php8.2 artisan migrate --force && php8.2 artisan cache:clear && php8.2 artisan config:cache && php8.2 artisan route:cache && php8.2 artisan view:cache"
+	@echo "✓ バックエンドのデプロイ完了"

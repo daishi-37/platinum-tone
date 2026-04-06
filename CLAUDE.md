@@ -15,9 +15,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### 認証・認可フロー
 
 1. フロントエンドは `frontend/lib/auth-context.tsx` でグローバルな認証状態を管理
-2. APIクライアントは `frontend/lib/api.ts` に集約
+2. APIクライアントは `frontend/lib/api.ts` に集約（CSRF Cookie自動取得、Sanctumセッション認証対応）
 3. バックエンドでは `RequireSubscription` ミドルウェアがStripeサブスクリプションの有効性を検証
 4. 会員限定ルートは `auth:sanctum` + `subscribed` ミドルウェアで保護
+5. `SUBSCRIBED_STATUSES` は `['trialing', 'active']`（`auth-context.tsx` の `isSubscribed()` で使用）
 
 ### APIルート構造（backend/routes/api.php）
 
@@ -29,12 +30,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   /lessons/{id}
   /podcast                        - ポッドキャスト（会員限定）
   /podcast/{id}
-  /podcast/{id}/stream            - 音声ストリーミング（保護済み）
+  /podcast/{id}/stream            - 音声ストリーミング（ダウンロード禁止ヘッダー付き）
   /blog                           - 会員限定ブログ
 /api/billing/                     - Stripeチェックアウト・ポータル・Webhook
 ```
 
 `subscribed` ミドルウェアは `backend/bootstrap/app.php` でエイリアス登録済み（実体: `RequireSubscription`）。メール認証フローは `backend/routes/web.php` で処理し、確認後はフロントエンドURLにリダイレクト。
+
+Stripe Webhookで処理するイベント（`StripeController@webhook`）：
+- `checkout.session.completed` — サブスクリプション開始時にUserを更新
+- `customer.subscription.updated` — ステータス変更・更新
+- `customer.subscription.deleted` — 解約
+- `invoice.payment_failed` — 支払い失敗
 
 ## 開発コマンド
 
@@ -106,7 +113,60 @@ php artisan db:seed
 
 ## データベース主要モデル
 
-- `User` — 認証情報 + Stripeサブスクリプションフィールド
-- `Post` — ブログ記事（公開/会員限定フラグ）
-- `Lesson` — 動画レッスン
-- `PodcastEpisode` — ポッドキャスト音声コンテンツ
+| モデル | 主要フィールド |
+|--------|------------|
+| `User` | `stripe_customer_id`, `stripe_subscription_id`, `subscription_status`（`none\|trialing\|active\|past_due\|cancelled`）, `trial_ends_at`, `subscription_ends_at` |
+| `Lesson` | `vimeo_id`, `thumbnail_url`, `sort_order`, `is_published` |
+| `PodcastEpisode` | `episode_number`, `audio_url`, `duration_seconds`, `is_published`, `published_at` |
+| `Post` | `slug`, `excerpt`, `body`, `is_members_only`, `is_published`, `published_at` |
+
+全モデルに `published()` スコープあり（`is_published = true` でフィルタリング）。
+
+## 本番デプロイ
+
+### サーバー構成（xserver）
+
+| | パス |
+|---|---|
+| フロントエンド | `/home/daishi37x/tone-ac.com/public_html/` |
+| バックエンド本体 | `/home/daishi37x/tone-ac.com/laravel/` |
+| `api.tone-ac.com` ドキュメントルート | `/home/daishi37x/tone-ac.com/public_html/api/` |
+
+`public_html/api/index.php` はLaravelを絶対パスで参照する独自ファイル（デプロイで上書きしない）。
+
+### デプロイコマンド
+
+```bash
+make deploy           # バックエンド → フロントエンドの順に両方デプロイ
+make deploy-frontend  # フロントエンドのみ
+make deploy-backend   # バックエンドのみ
+```
+
+**注意事項：**
+- サーバーのデフォルト `php` コマンドは 8.0 のため、`php8.2` を明示的に使用（Makefile設定済み）
+- `backend/.env` はrsync除外のため、サーバー上に本番用 `.env` を手動で管理すること
+- Podcast音声ファイル（`storage/app/podcast/`）はデプロイで除外されるため、scpで手動アップロード
+
+### 音声ファイルの追加手順
+
+```bash
+# 1. サーバーに音声ファイルをアップロード
+scp -P 10022 -i ~/.ssh/keys/daishi37x.key ./音声.mp3 \
+  daishi37x@daishi37x.xsrv.jp:~/tone-ac.com/laravel/storage/app/podcast/
+
+# 2. DBにエピソードを登録（Tinker経由）
+ssh -p 10022 -i ~/.ssh/keys/daishi37x.key daishi37x@daishi37x.xsrv.jp \
+  "cd ~/tone-ac.com/laravel && php8.2 artisan tinker"
+```
+
+```php
+\App\Models\PodcastEpisode::create([
+    'episode_number'   => 1,
+    'title'            => 'タイトル',
+    'description'      => '説明文',
+    'audio_url'        => 'podcast/音声.mp3',  // storage/app/ からの相対パス
+    'duration_seconds' => 0,
+    'is_published'     => true,
+    'published_at'     => now(),
+]);
+```

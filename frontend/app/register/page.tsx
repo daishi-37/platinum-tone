@@ -8,7 +8,36 @@ import { useAuth } from '@/lib/auth-context'
 
 type User = { id: number; name: string; email: string }
 
-export default function RegisterPage() {
+function ComingSoonPage() {
+  return (
+    <main className="flex items-center justify-center min-h-screen px-4 py-12">
+      <div className="w-full max-w-md text-center">
+        <h1 className="text-3xl font-bold text-text-main mb-3">Coming Soon</h1>
+        <p className="text-text-sub text-sm mb-8">
+          現在、新規登録の受付準備中です。<br />
+          もうしばらくお待ちください。
+        </p>
+        <Link
+          href=""
+          target='_blank'
+          className="text-sm text-primary hover:underline"
+        >
+          トップページへ戻る
+        </Link>
+
+        <Link
+          href="/"
+          className="text-sm text-primary hover:underline"
+        >
+          トップページへ戻る
+        </Link>
+      </div>
+    </main>
+  )
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function RegisterContent() {
   const router = useRouter()
   const { refresh } = useAuth()
   const [name, setName] = useState('')
@@ -33,7 +62,7 @@ export default function RegisterPage() {
           password_confirmation: passwordConfirmation,
         }),
       })
-      await refresh()   // AuthContext のユーザー状態を更新してからリダイレクト
+      await refresh()
       router.push('/billing/checkout')
     } catch (err) {
       const apiErr = err as ApiError
@@ -158,4 +187,8 @@ export default function RegisterPage() {
       </div>
     </main>
   )
+}
+
+export default function RegisterPage() {
+  return <ComingSoonPage />
 }
