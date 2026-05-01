@@ -8,6 +8,7 @@ export type User = {
   name: string
   email: string
   email_verified_at: string | null
+  is_admin: boolean
   subscription_status: 'none' | 'trialing' | 'active' | 'past_due' | 'cancelled'
   trial_ends_at: string | null
   subscription_ends_at: string | null
@@ -66,4 +67,8 @@ export const SUBSCRIBED_STATUSES = ['trialing', 'active'] as const
 
 export function isSubscribed(user: User | null): boolean {
   return !!user && SUBSCRIBED_STATUSES.includes(user.subscription_status as typeof SUBSCRIBED_STATUSES[number])
+}
+
+export function isAdmin(user: User | null): boolean {
+  return !!user && user.is_admin === true
 }

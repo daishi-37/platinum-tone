@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ContentController;
 use App\Http\Controllers\StripeController;
@@ -71,6 +73,25 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/blog',         [ContentController::class, 'membersPosts']);
         Route::get('/blog/{slug}',  [ContentController::class, 'membersPost']);
     });
+});
+
+/*
+|--------------------------------------------------------------------------
+| 管理者専用ルート
+|--------------------------------------------------------------------------
+*/
+Route::post('/auth/admin-login', [AdminAuthController::class, 'login']);
+
+Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
+    Route::post('/auth/logout', [AdminAuthController::class, 'logout']);
+
+    // ユーザー管理
+    Route::get('/users',                    [AdminUserController::class, 'index']);
+    Route::post('/users',                   [AdminUserController::class, 'store']);
+    Route::get('/users/{user}',             [AdminUserController::class, 'show']);
+    Route::put('/users/{user}',             [AdminUserController::class, 'update']);
+    Route::delete('/users/{user}',          [AdminUserController::class, 'destroy']);
+    Route::post('/users/{user}/stripe-portal', [AdminUserController::class, 'stripePortal']);
 });
 
 /*

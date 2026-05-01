@@ -57,6 +57,14 @@ class AuthController extends Controller
             ]);
         }
 
+        // 管理者は通常ログインから入れない
+        if (Auth::user()->is_admin) {
+            Auth::logout();
+            throw ValidationException::withMessages([
+                'email' => [__('auth.failed')],
+            ]);
+        }
+
         $request->session()->regenerate();
 
         return response()->json(Auth::user());

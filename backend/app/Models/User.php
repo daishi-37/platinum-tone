@@ -16,6 +16,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
+        'is_admin',
         'stripe_customer_id',
         'stripe_subscription_id',
         'subscription_status',
@@ -35,6 +36,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at'    => 'datetime',
             'password'             => 'hashed',
+            'is_admin'             => 'boolean',
             'trial_ends_at'        => 'datetime',
             'subscription_ends_at' => 'datetime',
         ];
