@@ -10,7 +10,7 @@ const PUBLIC_NAV = [
   { href: '/#features',    label: 'できること' },
   { href: '/#plan',        label: 'プラン・料金' },
   { href: '/#contents',    label: 'コンテンツ' },
-  { href: '/blog',         label: "What's 声優業界" },
+  { href: '/#contents',    label: "What's 声優業界" },
   { href: '/podcast',      label: 'Podcast' },
 ]
 

@@ -29,6 +29,75 @@ class ContentController extends Controller
     }
 
     // ─────────────────────────────────────────────────────────────────────
+    // Podcast Episodes（公開）
+    // ─────────────────────────────────────────────────────────────────────
+
+    /** ファイルベースのエピソード一覧（認証不要） */
+    public function publicPodcastFiles(): JsonResponse
+    {
+        $directory = storage_path('app/podcast');
+        $files = glob($directory . '/*.mp3') ?: [];
+
+        $episodes = collect($files)
+            ->map(function ($path) {
+                $filename = basename($path);
+                $name     = pathinfo($filename, PATHINFO_FILENAME);
+                $number   = preg_replace('/[^0-9]/', '', $name);
+                return [
+                    'filename'       => $filename,
+                    'episode_number' => (int) ltrim($number, '0') ?: 1,
+                    'label'          => 'EP.' . $number,
+                    'stream_url'     => url('/api/podcast/stream/' . $filename),
+                ];
+            })
+            ->sortBy('episode_number')
+            ->values();
+
+        return response()->json($episodes);
+    }
+
+    /** ファイルの公開ストリーミング（ダウンロード禁止・認証不要） */
+    public function publicPodcastStream(string $filename): \Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        // ディレクトリトラバーサル対策
+        abort_if(!preg_match('/^[\w\-]+\.mp3$/i', $filename), 400);
+
+        $path = storage_path('app/podcast/' . $filename);
+        abort_if(!file_exists($path), 404);
+
+        return response()->stream(function () use ($path) {
+            $stream = fopen($path, 'rb');
+            fpassthru($stream);
+            fclose($stream);
+        }, 200, [
+            'Content-Type'           => 'audio/mpeg',
+            'Content-Disposition'    => 'inline',
+            'X-Content-Type-Options' => 'nosniff',
+            'Cache-Control'          => 'no-store',
+        ]);
+    }
+
+    /** エピソード一覧（認証不要・DB driven） */
+    public function publicPodcastEpisodes(): JsonResponse
+    {
+        $episodes = PodcastEpisode::published()->get([
+            'id', 'episode_number', 'title', 'description',
+            'duration_seconds', 'thumbnail_url', 'published_at',
+        ]);
+        return response()->json($episodes);
+    }
+
+    /** エピソード詳細（認証不要・audio_stream_urlは含まない） */
+    public function publicPodcastEpisode(int $id): JsonResponse
+    {
+        $episode = PodcastEpisode::published()->findOrFail($id, [
+            'id', 'episode_number', 'title', 'description',
+            'duration_seconds', 'thumbnail_url', 'published_at',
+        ]);
+        return response()->json($episode);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
     // Podcast Episodes（会員限定）
     // ─────────────────────────────────────────────────────────────────────
 

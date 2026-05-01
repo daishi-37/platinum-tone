@@ -17,18 +17,22 @@ function ComingSoonPage() {
           現在、新規登録の受付準備中です。<br />
           もうしばらくお待ちください。
         </p>
-        <Link
-          href=""
-          target='_blank'
-          className="text-sm text-primary hover:underline"
-        >
-          トップページへ戻る
-        </Link>
 
-        <Link
-          href="/"
-          className="text-sm text-primary hover:underline"
-        >
+        <div className="card p-6 mb-6">
+          <p className="text-sm font-medium text-text-main mb-1">最新情報はLINEで受け取れます</p>
+          <p className="text-text-sub text-xs mb-4">開始のお知らせをいち早くお届けします</p>
+          <a
+            href="https://line.me/R/ti/p/@323rxgtw"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block bg-[#06C755] hover:bg-[#05b04c] text-white text-sm font-bold px-6 py-3 rounded-full transition-colors"
+          >
+            LINEで友だち追加
+          </a>
+          <p className="text-text-sub text-xs mt-3">LINE ID: @323rxgtw</p>
+        </div>
+
+        <Link href="/" className="text-sm text-primary hover:underline">
           トップページへ戻る
         </Link>
       </div>

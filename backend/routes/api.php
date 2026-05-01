@@ -27,6 +27,14 @@ Route::prefix('blog')->group(function () {
     Route::get('/{slug}', [ContentController::class, 'publicPost']);
 });
 
+// 公開Podcast（認証不要）
+Route::prefix('podcast')->group(function () {
+    Route::get('/files',          [ContentController::class, 'publicPodcastFiles']);
+    Route::get('/stream/{filename}', [ContentController::class, 'publicPodcastStream']);
+    Route::get('/',               [ContentController::class, 'publicPodcastEpisodes']);
+    Route::get('/{id}',           [ContentController::class, 'publicPodcastEpisode']);
+});
+
 /*
 |--------------------------------------------------------------------------
 | 認証必須ルート

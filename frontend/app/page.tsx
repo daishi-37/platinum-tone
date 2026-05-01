@@ -146,7 +146,7 @@ export default function Home() {
           <div className="grid sm:grid-cols-3 gap-8">
             {[
               { label: "What's 声優業界", type: "ブログ" },
-              { label: "声優になるためのレッスン", type: "動画" },
+              { label: "トレーニング", type: "動画" },
               { label: "対談", type: "動画" },
             ].map((sec) => (
               <div key={sec.label}>
