@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\AdminBlogController;
+use App\Http\Controllers\AdminPodcastController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ContentController;
@@ -84,6 +86,21 @@ Route::post('/auth/admin-login', [AdminAuthController::class, 'login']);
 
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
     Route::post('/auth/logout', [AdminAuthController::class, 'logout']);
+
+    // ブログ管理
+    Route::post('/blog/slug-suggestion',    [AdminBlogController::class, 'slugSuggestion']);
+    Route::get('/blog',                     [AdminBlogController::class, 'index']);
+    Route::post('/blog',                    [AdminBlogController::class, 'store']);
+    Route::get('/blog/{post}',              [AdminBlogController::class, 'show']);
+    Route::put('/blog/{post}',              [AdminBlogController::class, 'update']);
+    Route::delete('/blog/{post}',           [AdminBlogController::class, 'destroy']);
+
+    // ポッドキャスト管理
+    Route::get('/podcast',                  [AdminPodcastController::class, 'index']);
+    Route::post('/podcast',                 [AdminPodcastController::class, 'store']);
+    Route::get('/podcast/{episode}',        [AdminPodcastController::class, 'show']);
+    Route::put('/podcast/{episode}',        [AdminPodcastController::class, 'update']);
+    Route::delete('/podcast/{episode}',     [AdminPodcastController::class, 'destroy']);
 
     // ユーザー管理
     Route::get('/users',                    [AdminUserController::class, 'index']);

@@ -16,7 +16,18 @@ class RequireSubscription
     {
         $user = $request->user();
 
-        if (!$user || !in_array($user->subscription_status, ['trialing', 'active'])) {
+        if (!$user) {
+            return response()->json([
+                'message' => 'この機能はご利用いただけません。サブスクリプションが必要です。',
+            ], 403);
+        }
+
+        // 管理者はサブスクリプション不要で全コンテンツにアクセス可能
+        if ($user->is_admin) {
+            return $next($request);
+        }
+
+        if (!in_array($user->subscription_status, ['trialing', 'active'])) {
             return response()->json([
                 'message' => 'この機能はご利用いただけません。サブスクリプションが必要です。',
             ], 403);

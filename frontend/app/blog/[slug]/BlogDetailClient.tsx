@@ -5,22 +5,23 @@ import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import remarkBreaks from 'remark-breaks'
 import { apiRequest } from '@/lib/api'
-import RequireMember from '@/components/RequireMember'
 
 type Post = {
   id: number
   title: string
   slug: string
   body: string
+  excerpt: string
+  thumbnail_url: string | null
   published_at: string
 }
 
-function MembersBlogPostContent() {
+export default function BlogDetailClient() {
   const [slug, setSlug] = useState('')
   const [post, setPost] = useState<Post | null>(null)
   const [loading, setLoading] = useState(true)
 
-  // Nginx が /members/blog/[slug]/ → /members/blog/_/ にリライトするため
+  // Nginx が /blog/[slug]/ → /blog/_/ にリライトするため useParams は使えない。
   // ブラウザの実際のURLからslugを取得する。
   useEffect(() => {
     const parts = window.location.pathname.replace(/\/$/, '').split('/')
@@ -30,7 +31,7 @@ function MembersBlogPostContent() {
   useEffect(() => {
     if (!slug || slug === '_') return
     setLoading(true)
-    apiRequest<Post>(`/members/blog/${slug}`)
+    apiRequest<Post>(`/blog/${slug}`)
       .then(setPost)
       .finally(() => setLoading(false))
   }, [slug])
@@ -47,10 +48,15 @@ function MembersBlogPostContent() {
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-10">
-
-      <Link href="/members/blog" className="text-sm text-text-sub hover:text-primary transition-colors mb-6 inline-block">
-        ← ブログ一覧へ戻る
+      <Link href="/blog" className="text-sm text-text-sub hover:text-primary transition-colors mb-6 inline-block">
+        ← What&apos;s 声優業界 一覧へ
       </Link>
+
+      {post.thumbnail_url && (
+        <div className="rounded-xl overflow-hidden mb-6">
+          <img src={post.thumbnail_url} alt={post.title} className="w-full h-48 object-cover" />
+        </div>
+      )}
 
       <p className="text-xs text-text-sub mb-2">
         {new Date(post.published_at).toLocaleDateString('ja-JP')}
@@ -60,15 +66,6 @@ function MembersBlogPostContent() {
       <div className="card p-8 prose prose-sm max-w-none text-text-main leading-relaxed">
         <ReactMarkdown remarkPlugins={[remarkBreaks]}>{post.body}</ReactMarkdown>
       </div>
-
     </main>
-  )
-}
-
-export default function BlogPostPageClient() {
-  return (
-    <RequireMember>
-      <MembersBlogPostContent />
-    </RequireMember>
   )
 }

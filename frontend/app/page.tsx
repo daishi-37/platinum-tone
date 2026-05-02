@@ -1,6 +1,7 @@
 import Image from "next/image";
 import HeroSection from "@/components/HeroSection";
 import PlanCTA from "@/components/PlanCTA";
+import FeaturedBlogPosts from "@/components/FeaturedBlogPosts";
 
 export default function Home() {
   return (
@@ -144,8 +145,9 @@ export default function Home() {
           <p className="text-text-sub text-xs tracking-widest uppercase mb-2">Contents</p>
           <h2 className="text-2xl font-bold text-primary mb-6">コンテンツ</h2>
           <div className="grid sm:grid-cols-3 gap-8">
+            <FeaturedBlogPosts />
+
             {[
-              { label: "What's 声優業界", type: "ブログ" },
               { label: "トレーニング", type: "動画" },
               { label: "対談", type: "動画" },
             ].map((sec) => (

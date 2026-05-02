@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth, isSubscribed } from '@/lib/auth-context'
+import { useAuth, isSubscribed, isAdmin } from '@/lib/auth-context'
 
 /**
  * 会員限定ページ用ガード
@@ -20,7 +20,7 @@ export default function RequireMember({ children }: { children: React.ReactNode 
       router.replace('/login')
       return
     }
-    if (!isSubscribed(user)) {
+    if (!isSubscribed(user) && !isAdmin(user)) {
       router.replace('/billing/checkout')
     }
   }, [user, loading, router])
@@ -33,7 +33,7 @@ export default function RequireMember({ children }: { children: React.ReactNode 
     )
   }
 
-  if (!user || !isSubscribed(user)) return null
+  if (!user || (!isSubscribed(user) && !isAdmin(user))) return null
 
   return <>{children}</>
 }
