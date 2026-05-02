@@ -1,9 +1,9 @@
-import PodcastEpisodeClient from './PodcastEpisodeClient'
+import PodcastDetailClient from './PodcastDetailClient'
 
 export function generateStaticParams() {
   return [{ id: '_' }]
 }
 
-export default function PodcastEpisodePage() {
-  return <PodcastEpisodeClient />
+export default function PodcastDetailPage() {
+  return <PodcastDetailClient />
 }

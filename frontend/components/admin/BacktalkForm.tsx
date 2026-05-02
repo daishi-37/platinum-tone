@@ -1,47 +1,51 @@
 'use client'
 
-import dynamic from 'next/dynamic'
 import { useState } from 'react'
-import { apiRequest, ApiError } from '@/lib/api'
-import remarkBreaks from 'remark-breaks'
+import { apiRequest } from '@/lib/api'
 
-// SSR を避けるため動的インポート
-const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false })
-
-export type BlogFormData = {
+export type BacktalkFormData = {
   title: string
   slug: string
-  excerpt: string
-  body: string
+  description: string
+  vimeo_url: string
   thumbnail_url: string
   is_published: boolean
   published_at: string
 }
 
 type Props = {
-  initial: BlogFormData
-  onSubmit: (data: BlogFormData) => Promise<void>
+  initial: BacktalkFormData
+  onSubmit: (data: BacktalkFormData) => Promise<void>
   saving: boolean
   errors: Record<string, string>
 }
 
-export function defaultBlogForm(): BlogFormData {
+export function defaultBacktalkForm(): BacktalkFormData {
   return {
     title: '',
     slug: '',
-    excerpt: '',
-    body: '',
+    description: '',
+    vimeo_url: '',
     thumbnail_url: '',
     is_published: false,
     published_at: '',
   }
 }
 
-export default function BlogForm({ initial, onSubmit, saving, errors }: Props) {
-  const [form, setForm] = useState<BlogFormData>(initial)
+function getVimeoEmbedUrl(url: string): string {
+  // https://vimeo.com/123456789 または https://vimeo.com/123456789/abcdef (非公開)
+  const match = url.match(/vimeo\.com\/(\d+)(?:\/([a-f0-9]+))?/)
+  if (!match) return ''
+  return match[2]
+    ? `https://player.vimeo.com/video/${match[1]}?h=${match[2]}`
+    : `https://player.vimeo.com/video/${match[1]}`
+}
+
+export default function BacktalkForm({ initial, onSubmit, saving, errors }: Props) {
+  const [form, setForm] = useState<BacktalkFormData>(initial)
   const [slugLoading, setSlugLoading] = useState(false)
 
-  function set<K extends keyof BlogFormData>(key: K, value: BlogFormData[K]) {
+  function set<K extends keyof BacktalkFormData>(key: K, value: BacktalkFormData[K]) {
     setForm((f) => ({ ...f, [key]: value }))
   }
 
@@ -49,7 +53,7 @@ export default function BlogForm({ initial, onSubmit, saving, errors }: Props) {
     if (!form.title) return
     setSlugLoading(true)
     try {
-      const res = await apiRequest<{ slug: string }>('/admin/blog/slug-suggestion', {
+      const res = await apiRequest<{ slug: string }>('/admin/backtalk/slug-suggestion', {
         method: 'POST',
         body: JSON.stringify({ title: form.title }),
       })
@@ -58,6 +62,8 @@ export default function BlogForm({ initial, onSubmit, saving, errors }: Props) {
       setSlugLoading(false)
     }
   }
+
+  const embedUrl = getVimeoEmbedUrl(form.vimeo_url)
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -90,7 +96,7 @@ export default function BlogForm({ initial, onSubmit, saving, errors }: Props) {
             value={form.slug}
             onChange={(e) => set('slug', e.target.value)}
             required
-            placeholder="my-article"
+            placeholder="episode-01"
             className={field(errors.slug) + ' flex-1'}
           />
           <button
@@ -105,32 +111,44 @@ export default function BlogForm({ initial, onSubmit, saving, errors }: Props) {
         {errors.slug && <p className="text-red-500 text-xs mt-1">{errors.slug}</p>}
       </div>
 
-      {/* 抜粋 */}
+      {/* 説明文 */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          抜粋 <span className="text-gray-400 font-normal text-xs">（一覧に表示される短い説明文）</span>
-        </label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">説明文</label>
         <textarea
-          value={form.excerpt}
-          onChange={(e) => set('excerpt', e.target.value)}
-          rows={2}
-          className={field(errors.excerpt)}
+          value={form.description}
+          onChange={(e) => set('description', e.target.value)}
+          rows={3}
+          className={field(errors.description)}
         />
       </div>
 
-      {/* 本文（Markdownエディタ） */}
+      {/* Vimeo URL */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">本文</label>
-        <div data-color-mode="light">
-          <MDEditor
-            value={form.body}
-            onChange={(v) => set('body', v ?? '')}
-            height={400}
-            preview="live"
-            previewOptions={{ remarkPlugins: [remarkBreaks] }}
-          />
-        </div>
-        {errors.body && <p className="text-red-500 text-xs mt-1">{errors.body}</p>}
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Vimeo URL
+          <span className="text-gray-400 font-normal text-xs ml-2">（例: https://vimeo.com/123456789）</span>
+        </label>
+        <input
+          type="text"
+          value={form.vimeo_url}
+          onChange={(e) => set('vimeo_url', e.target.value)}
+          required
+          placeholder="https://vimeo.com/123456789"
+          className={field(errors.vimeo_url)}
+        />
+        {errors.vimeo_url && <p className="text-red-500 text-xs mt-1">{errors.vimeo_url}</p>}
+
+        {/* プレビュー */}
+        {embedUrl && (
+          <div className="mt-3 rounded-xl overflow-hidden bg-black aspect-video">
+            <iframe
+              src={embedUrl}
+              className="w-full h-full"
+              allow="autoplay; fullscreen; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        )}
       </div>
 
       {/* サムネイルURL */}

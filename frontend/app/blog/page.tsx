@@ -24,7 +24,7 @@ export default function BlogListPage() {
   return (
     <main className="max-w-4xl mx-auto px-6 py-12">
       <p className="text-text-sub text-xs tracking-widest uppercase mb-2">Blog</p>
-      <h1 className="text-2xl font-bold text-primary mb-2">What&apos;s 声優業界</h1>
+      <h1 className="text-2xl font-bold text-primary mb-2">ブログ</h1>
       <p className="text-text-sub text-sm mb-10">声優業界の最新情報・ナレッジをお届けします。</p>
 
       {loading ? (

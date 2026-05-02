@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BacktalkEpisode;
 use App\Models\Lesson;
 use App\Models\Post;
 use App\Models\PodcastEpisode;
+use App\Models\VoicedoorEpisode;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -180,6 +182,45 @@ class ContentController extends Controller
             ->where('slug', $slug)
             ->firstOrFail();
         return response()->json($post);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // 声優登竜門 裏トーク（会員限定・Vimeo動画）
+    // ─────────────────────────────────────────────────────────────────────
+
+    public function backtalkEpisodes(): JsonResponse
+    {
+        $episodes = BacktalkEpisode::published()
+            ->get(['id', 'title', 'slug', 'description', 'thumbnail_url', 'published_at']);
+
+        return response()->json($episodes);
+    }
+
+    public function backtalkEpisode(string $slug): JsonResponse
+    {
+        $episode = BacktalkEpisode::published()
+            ->where('slug', $slug)
+            ->firstOrFail();
+
+        return response()->json($episode);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // 声優登竜門（公開・Apple Podcast）
+    // ─────────────────────────────────────────────────────────────────────
+
+    public function voicedoorEpisodes(): JsonResponse
+    {
+        $episodes = VoicedoorEpisode::published()->get([
+            'id', 'title', 'description', 'apple_podcast_url', 'published_at',
+        ]);
+        return response()->json($episodes);
+    }
+
+    public function voicedoorEpisode(int $id): JsonResponse
+    {
+        $episode = VoicedoorEpisode::published()->findOrFail($id);
+        return response()->json($episode);
     }
 
     /** 公開ブログ一覧（認証不要） */

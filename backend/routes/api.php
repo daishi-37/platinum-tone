@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\AdminAuthController;
+use App\Http\Controllers\AdminBacktalkController;
 use App\Http\Controllers\AdminBlogController;
 use App\Http\Controllers\AdminPodcastController;
 use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\AdminVoicedoorController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ContentController;
 use App\Http\Controllers\StripeController;
@@ -39,6 +41,12 @@ Route::prefix('podcast')->group(function () {
     Route::get('/{id}',           [ContentController::class, 'publicPodcastEpisode']);
 });
 
+// 声優登竜門（認証不要・Apple Podcast）
+Route::prefix('voicedoor')->group(function () {
+    Route::get('/',      [ContentController::class, 'voicedoorEpisodes']);
+    Route::get('/{id}',  [ContentController::class, 'voicedoorEpisode']);
+});
+
 /*
 |--------------------------------------------------------------------------
 | 認証必須ルート
@@ -65,11 +73,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/lessons',     [ContentController::class, 'lessons']);
         Route::get('/lessons/{id}', [ContentController::class, 'lesson']);
 
-        // Podcast
-        Route::get('/podcast',        [ContentController::class, 'podcastEpisodes']);
-        Route::get('/podcast/{id}',   [ContentController::class, 'podcastEpisode']);
-        Route::get('/podcast/{id}/stream', [ContentController::class, 'podcastStream'])
-            ->name('podcast.stream');
+        // 声優登竜門 裏トーク（Vimeo動画）
+        Route::get('/podcast',           [ContentController::class, 'backtalkEpisodes']);
+        Route::get('/podcast/{slug}',    [ContentController::class, 'backtalkEpisode']);
 
         // 会員限定ブログ
         Route::get('/blog',         [ContentController::class, 'membersPosts']);
@@ -95,12 +101,27 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::put('/blog/{post}',              [AdminBlogController::class, 'update']);
     Route::delete('/blog/{post}',           [AdminBlogController::class, 'destroy']);
 
+    // 裏トーク管理（Vimeo動画・会員限定）
+    Route::post('/backtalk/slug-suggestion',   [AdminBacktalkController::class, 'slugSuggestion']);
+    Route::get('/backtalk',                    [AdminBacktalkController::class, 'index']);
+    Route::post('/backtalk',                   [AdminBacktalkController::class, 'store']);
+    Route::get('/backtalk/{backtalk}',         [AdminBacktalkController::class, 'show']);
+    Route::put('/backtalk/{backtalk}',         [AdminBacktalkController::class, 'update']);
+    Route::delete('/backtalk/{backtalk}',      [AdminBacktalkController::class, 'destroy']);
+
     // ポッドキャスト管理
     Route::get('/podcast',                  [AdminPodcastController::class, 'index']);
     Route::post('/podcast',                 [AdminPodcastController::class, 'store']);
     Route::get('/podcast/{episode}',        [AdminPodcastController::class, 'show']);
     Route::put('/podcast/{episode}',        [AdminPodcastController::class, 'update']);
     Route::delete('/podcast/{episode}',     [AdminPodcastController::class, 'destroy']);
+
+    // 声優登竜門管理（Apple Podcast・公開）
+    Route::get('/voicedoor',                  [AdminVoicedoorController::class, 'index']);
+    Route::post('/voicedoor',                 [AdminVoicedoorController::class, 'store']);
+    Route::get('/voicedoor/{voicedoor}',      [AdminVoicedoorController::class, 'show']);
+    Route::put('/voicedoor/{voicedoor}',      [AdminVoicedoorController::class, 'update']);
+    Route::delete('/voicedoor/{voicedoor}',   [AdminVoicedoorController::class, 'destroy']);
 
     // ユーザー管理
     Route::get('/users',                    [AdminUserController::class, 'index']);

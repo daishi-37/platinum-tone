@@ -34,8 +34,8 @@ function MembersBlogContent() {
 
   return (
     <main className="max-w-4xl mx-auto px-6 py-12">
-      <h1 className="text-2xl font-bold text-text-main mb-2">会員限定ブログ</h1>
-      <p className="text-text-sub text-sm mb-8">声優になるためのナレッジ</p>
+      <h1 className="text-2xl font-bold text-text-main mb-2">What&apos;s 声優業界</h1>
+      <p className="text-text-sub text-sm mb-8">声優業界の最前線をお届けします。</p>
 
       {posts.length === 0 ? (
         <p className="text-text-sub">記事を準備中です。</p>

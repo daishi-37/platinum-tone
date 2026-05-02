@@ -4,21 +4,28 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth, isSubscribed } from '@/lib/auth-context'
 
-const PUBLIC_NAV = [
-  { href: '/#about',       label: 'アカデミーについて' },
-  { href: '/#instructors', label: '講師紹介' },
-  { href: '/#features',    label: 'できること' },
-  { href: '/#plan',        label: 'プラン・料金' },
-  { href: '/#contents',    label: 'コンテンツ' },
-  { href: '/blog',          label: "What's 声優業界" },
-  { href: '/podcast',      label: 'Podcast' },
+type NavLink    = { type: 'link';    href: string; label: string }
+type NavSection = { type: 'section'; label: string }
+type NavItem    = NavLink | NavSection
+
+const PUBLIC_NAV: NavItem[] = [
+  { type: 'link', href: '/#about',       label: 'アカデミーについて' },
+  { type: 'link', href: '/#instructors', label: '講師紹介' },
+  { type: 'link', href: '/#features',    label: 'できること' },
+  { type: 'link', href: '/#plan',        label: 'プラン・料金' },
+  { type: 'link', href: '/#contents',    label: 'コンテンツ' },
+  { type: 'link', href: '/blog',         label: "What's 声優業界" },
+  { type: 'link', href: '/podcast',      label: 'Podcast' },
 ]
 
-const MEMBER_NAV = [
-  { href: '/dashboard',         label: 'ダッシュボード' },
-  { href: '/members/lessons',   label: 'レッスン動画' },
-  { href: '/members/podcast',   label: '会員限定 Podcast' },
-  { href: '/members/blog',      label: '会員限定ブログ' },
+const MEMBER_NAV: NavItem[] = [
+  { type: 'link',    href: '/dashboard',       label: 'ダッシュボード' },
+  { type: 'link',    href: '/members/blog',    label: "What's 声優業界" },
+  { type: 'link',    href: '/members/podcast', label: '声優登竜門 裏トーク' },
+  { type: 'link',    href: '/board',           label: '掲示板' },
+  { type: 'section', label: '公開コンテンツ' },
+  { type: 'link',    href: '/blog',            label: 'ブログ' },
+  { type: 'link',    href: '/podcast',         label: '声優登竜門' },
 ]
 
 export default function SidebarNav() {
@@ -36,16 +43,24 @@ export default function SidebarNav() {
     <>
       {/* ナビゲーション */}
       <nav className="flex-1 px-4 py-6 space-y-1">
-        {nav.map(({ href, label }) => (
-          <Link
-            key={href}
-            href={href}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/80 hover:text-white hover:bg-white/10 transition-colors"
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0" />
-            {label}
-          </Link>
-        ))}
+        {nav.map((item) =>
+          item.type === 'section' ? (
+            <div key={item.label} className="flex items-center gap-2 px-3 py-2">
+              <span className="text-white/20 text-xs">-</span>
+              <span className="text-white/40 text-xs tracking-wide">{item.label}</span>
+              <span className="text-white/20 text-xs">-</span>
+            </div>
+          ) : (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-accent flex-shrink-0" />
+              {item.label}
+            </Link>
+          )
+        )}
 
         <div className="border-t border-white/10 my-4" />
 

@@ -13,12 +13,15 @@ class AdminBlogController extends Controller
      * 記事一覧
      * GET /api/admin/blog
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $posts = Post::orderBy('created_at', 'desc')
-            ->get(['id', 'title', 'slug', 'is_members_only', 'is_published', 'published_at']);
+        $query = Post::orderBy('created_at', 'desc');
 
-        return response()->json($posts);
+        if ($request->has('is_members_only')) {
+            $query->where('is_members_only', filter_var($request->is_members_only, FILTER_VALIDATE_BOOLEAN));
+        }
+
+        return response()->json($query->get(['id', 'title', 'slug', 'is_members_only', 'is_published', 'published_at']));
     }
 
     /**

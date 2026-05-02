@@ -7,18 +7,17 @@ type PostRow = {
   id: number
   title: string
   slug: string
-  is_members_only: boolean
   is_published: boolean
   published_at: string | null
 }
 
-export default function AdminBlogPage() {
+export default function AdminMembersBlogPage() {
   const [posts, setPosts] = useState<PostRow[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    apiRequest<PostRow[]>('/admin/blog?is_members_only=false')
+    apiRequest<PostRow[]>('/admin/blog?is_members_only=true')
       .then(setPosts)
       .catch((e: ApiError) => setError(e.message))
       .finally(() => setLoading(false))
@@ -40,8 +39,8 @@ export default function AdminBlogPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900">ブログ</h1>
-        <a href="/admin/blog/new" className="bg-primary hover:bg-primary-hover text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
+        <h1 className="text-2xl font-semibold text-gray-900">What's 声優業界</h1>
+        <a href="/admin/members-blog/new" className="bg-primary hover:bg-primary-hover text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
           + 新規作成
         </a>
       </div>
@@ -51,7 +50,6 @@ export default function AdminBlogPage() {
           <thead className="bg-slate-50 border-b border-gray-200">
             <tr>
               <th className="text-left px-4 py-3 text-gray-500 font-medium">タイトル</th>
-              <th className="text-left px-4 py-3 text-gray-500 font-medium">種別</th>
               <th className="text-left px-4 py-3 text-gray-500 font-medium">状態</th>
               <th className="text-left px-4 py-3 text-gray-500 font-medium">公開日</th>
               <th className="px-4 py-3"></th>
@@ -62,12 +60,6 @@ export default function AdminBlogPage() {
               <tr key={post.id} className="hover:bg-slate-50">
                 <td className="px-4 py-3 font-medium text-gray-900">{post.title}</td>
                 <td className="px-4 py-3">
-                  {post.is_members_only
-                    ? <span className="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded-full">会員限定</span>
-                    : <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">公開</span>
-                  }
-                </td>
-                <td className="px-4 py-3">
                   {post.is_published
                     ? <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">公開中</span>
                     : <span className="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded-full">下書き</span>
@@ -77,7 +69,7 @@ export default function AdminBlogPage() {
                   {post.published_at ? new Date(post.published_at).toLocaleDateString('ja-JP') : '―'}
                 </td>
                 <td className="px-4 py-3 text-right space-x-2">
-                  <a href={`/admin/blog/edit/?id=${post.id}`} className="text-primary hover:underline">編集</a>
+                  <a href={`/admin/members-blog/edit/?id=${post.id}`} className="text-primary hover:underline">編集</a>
                   <button onClick={() => handleDelete(post)} className="text-red-400 hover:underline">削除</button>
                 </td>
               </tr>

@@ -7,28 +7,19 @@ import RequireMember from '@/components/RequireMember'
 
 type Episode = {
   id: number
-  episode_number: number
   title: string
-  description: string
-  duration_seconds: number
+  slug: string
+  description: string | null
   thumbnail_url: string | null
   published_at: string
 }
 
-function formatDuration(seconds: number): string {
-  const m = Math.floor(seconds / 60)
-  const s = seconds % 60
-  return `${m}:${String(s).padStart(2, '0')}`
-}
-
-function PodcastContent() {
+function BacktalkListContent() {
   const [episodes, setEpisodes] = useState<Episode[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    apiRequest<Episode[]>('/members/podcast')
-      .then(setEpisodes)
-      .finally(() => setLoading(false))
+    apiRequest<Episode[]>('/members/podcast').then(setEpisodes).finally(() => setLoading(false))
   }, [])
 
   if (loading) {
@@ -41,35 +32,43 @@ function PodcastContent() {
 
   return (
     <main className="max-w-4xl mx-auto px-6 py-12">
-      <h1 className="text-2xl font-bold text-text-main mb-2">会員限定 Podcast</h1>
-      <p className="text-text-sub text-sm mb-8">声優業界の裏話・マインドセット</p>
+      <p className="text-text-sub text-xs tracking-widest uppercase mb-2">Members</p>
+      <h1 className="text-2xl font-bold text-text-main mb-2">声優登竜門 裏トーク</h1>
+      <p className="text-text-sub text-sm mb-10">会員限定の動画コンテンツをお届けします。</p>
 
       {episodes.length === 0 ? (
-        <p className="text-text-sub">エピソードを準備中です。</p>
+        <p className="text-text-sub">動画を準備中です。</p>
       ) : (
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {episodes.map((ep) => (
             <Link
               key={ep.id}
-              href={`/members/podcast/${ep.id}`}
-              className="card p-5 flex items-center gap-5 hover:shadow-md transition-shadow group"
+              href={`/members/podcast/${ep.slug}`}
+              className="card overflow-hidden hover:shadow-md transition-shadow group"
             >
-              <div className="w-14 h-14 bg-sidebar-bg/10 rounded-xl flex-shrink-0 flex items-center justify-center text-2xl">
-                🎙️
-              </div>
-
-              <div className="flex-1 min-w-0">
-                <p className="text-xs text-text-sub mb-1">EP.{ep.episode_number}</p>
-                <h2 className="font-bold text-text-main group-hover:text-primary transition-colors line-clamp-1">
-                  {ep.title}
-                </h2>
-                <div className="flex items-center gap-3 mt-1 text-xs text-text-sub">
-                  <span>🕐 {formatDuration(ep.duration_seconds)}</span>
-                  <span>{new Date(ep.published_at).toLocaleDateString('ja-JP')}</span>
+              <div className="h-40 bg-section-bg flex items-center justify-center overflow-hidden relative">
+                {ep.thumbnail_url ? (
+                  <img src={ep.thumbnail_url} alt={ep.title} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-5xl">🎬</span>
+                )}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-full bg-black/50 flex items-center justify-center">
+                    <span className="text-white text-xl ml-1">▶</span>
+                  </div>
                 </div>
               </div>
-
-              <span className="text-text-sub text-xl flex-shrink-0">›</span>
+              <div className="p-5">
+                <p className="text-xs text-text-sub mb-2">
+                  {new Date(ep.published_at).toLocaleDateString('ja-JP')}
+                </p>
+                <h2 className="font-bold text-text-main group-hover:text-primary transition-colors line-clamp-2 mb-2">
+                  {ep.title}
+                </h2>
+                {ep.description && (
+                  <p className="text-text-sub text-sm line-clamp-2">{ep.description}</p>
+                )}
+              </div>
             </Link>
           ))}
         </div>
@@ -78,10 +77,10 @@ function PodcastContent() {
   )
 }
 
-export default function PodcastPage() {
+export default function MembersPodcastPage() {
   return (
     <RequireMember>
-      <PodcastContent />
+      <BacktalkListContent />
     </RequireMember>
   )
 }

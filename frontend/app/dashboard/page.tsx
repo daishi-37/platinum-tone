@@ -6,11 +6,15 @@ import { useAuth } from '@/lib/auth-context'
 import { apiRequest, type ApiError } from '@/lib/api'
 import RequireMember from '@/components/RequireMember'
 
-const CONTENT_CARDS = [
-  { href: '/members/lessons',  title: '声優レッスン動画',    desc: '仙台エリ・優希比呂による直接指導',     emoji: '🎬' },
-  { href: '/members/podcast',  title: '会員限定 Podcast',   desc: '声優業界の裏話・マインドセット',        emoji: '🎙️' },
-  { href: '/members/blog',     title: '会員限定ブログ',      desc: '声優になるためのナレッジ',             emoji: '📝' },
-  { href: '/members/q-and-a',  title: 'Q&A・フィードバック', desc: '講師への質問コーナー',                 emoji: '💬' },
+const MEMBER_CARDS = [
+  { href: '/members/blog',    title: "What's 声優業界", desc: '声優になるためのナレッジ',        emoji: '📝' },
+  { href: '/members/podcast', title: '声優登竜門 裏トーク', desc: '会員限定 Vimeo動画',          emoji: '🎬' },
+  { href: '/board',           title: '掲示板',           desc: '講師への質問・フィードバック',    emoji: '💬' },
+]
+
+const PUBLIC_CARDS = [
+  { href: '/blog',    title: 'ブログ',    desc: '声優業界の最新情報', emoji: '📰' },
+  { href: '/podcast', title: '声優登竜門', desc: 'Apple Podcastで聴く', emoji: '🎙️' },
 ]
 
 function DashboardContent() {
@@ -45,18 +49,28 @@ function DashboardContent() {
         会員アクティブ
       </div>
 
-      {/* コンテンツカード */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
-        {CONTENT_CARDS.map(({ href, title, desc, emoji }) => (
-          <Link
-            key={href}
-            href={href}
-            className="card p-6 hover:shadow-md transition-shadow group"
-          >
+      {/* 会員限定コンテンツ */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        {MEMBER_CARDS.map(({ href, title, desc, emoji }) => (
+          <Link key={href} href={href} className="card p-6 hover:shadow-md transition-shadow group">
             <div className="text-3xl mb-3">{emoji}</div>
-            <h2 className="font-bold text-text-main group-hover:text-primary transition-colors mb-1">
-              {title}
-            </h2>
+            <h2 className="font-bold text-text-main group-hover:text-primary transition-colors mb-1">{title}</h2>
+            <p className="text-text-sub text-sm">{desc}</p>
+          </Link>
+        ))}
+      </div>
+
+      {/* 公開コンテンツ */}
+      <div className="flex items-center gap-2 mb-4">
+        <span className="text-text-sub/40 text-xs">-</span>
+        <span className="text-text-sub text-xs tracking-wide">公開コンテンツ</span>
+        <span className="text-text-sub/40 text-xs">-</span>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
+        {PUBLIC_CARDS.map(({ href, title, desc, emoji }) => (
+          <Link key={href} href={href} className="card p-6 hover:shadow-md transition-shadow group">
+            <div className="text-3xl mb-3">{emoji}</div>
+            <h2 className="font-bold text-text-main group-hover:text-primary transition-colors mb-1">{title}</h2>
             <p className="text-text-sub text-sm">{desc}</p>
           </Link>
         ))}

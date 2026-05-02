@@ -3,32 +3,30 @@
 import { useEffect, useState } from 'react'
 import { apiRequest, ApiError } from '@/lib/api'
 
-type PostRow = {
+type EpisodeRow = {
   id: number
   title: string
-  slug: string
-  is_members_only: boolean
   is_published: boolean
   published_at: string | null
 }
 
-export default function AdminBlogPage() {
-  const [posts, setPosts] = useState<PostRow[]>([])
+export default function AdminVoicedoorPage() {
+  const [episodes, setEpisodes] = useState<EpisodeRow[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    apiRequest<PostRow[]>('/admin/blog?is_members_only=false')
-      .then(setPosts)
+    apiRequest<EpisodeRow[]>('/admin/voicedoor')
+      .then(setEpisodes)
       .catch((e: ApiError) => setError(e.message))
       .finally(() => setLoading(false))
   }, [])
 
-  async function handleDelete(post: PostRow) {
-    if (!confirm(`「${post.title}」を削除しますか？`)) return
+  async function handleDelete(ep: EpisodeRow) {
+    if (!confirm(`「${ep.title}」を削除しますか？`)) return
     try {
-      await apiRequest(`/admin/blog/${post.id}`, { method: 'DELETE' })
-      setPosts((prev) => prev.filter((p) => p.id !== post.id))
+      await apiRequest(`/admin/voicedoor/${ep.id}`, { method: 'DELETE' })
+      setEpisodes((prev) => prev.filter((e) => e.id !== ep.id))
     } catch (e) {
       alert((e as ApiError).message)
     }
@@ -40,8 +38,8 @@ export default function AdminBlogPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900">ブログ</h1>
-        <a href="/admin/blog/new" className="bg-primary hover:bg-primary-hover text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
+        <h1 className="text-2xl font-semibold text-gray-900">声優登竜門</h1>
+        <a href="/admin/voicedoor/new" className="bg-primary hover:bg-primary-hover text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
           + 新規作成
         </a>
       </div>
@@ -51,41 +49,34 @@ export default function AdminBlogPage() {
           <thead className="bg-slate-50 border-b border-gray-200">
             <tr>
               <th className="text-left px-4 py-3 text-gray-500 font-medium">タイトル</th>
-              <th className="text-left px-4 py-3 text-gray-500 font-medium">種別</th>
               <th className="text-left px-4 py-3 text-gray-500 font-medium">状態</th>
               <th className="text-left px-4 py-3 text-gray-500 font-medium">公開日</th>
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
-            {posts.map((post) => (
-              <tr key={post.id} className="hover:bg-slate-50">
-                <td className="px-4 py-3 font-medium text-gray-900">{post.title}</td>
+            {episodes.map((ep) => (
+              <tr key={ep.id} className="hover:bg-slate-50">
+                <td className="px-4 py-3 font-medium text-gray-900">{ep.title}</td>
                 <td className="px-4 py-3">
-                  {post.is_members_only
-                    ? <span className="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded-full">会員限定</span>
-                    : <span className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full">公開</span>
-                  }
-                </td>
-                <td className="px-4 py-3">
-                  {post.is_published
+                  {ep.is_published
                     ? <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">公開中</span>
                     : <span className="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded-full">下書き</span>
                   }
                 </td>
                 <td className="px-4 py-3 text-gray-500">
-                  {post.published_at ? new Date(post.published_at).toLocaleDateString('ja-JP') : '―'}
+                  {ep.published_at ? new Date(ep.published_at).toLocaleDateString('ja-JP') : '―'}
                 </td>
                 <td className="px-4 py-3 text-right space-x-2">
-                  <a href={`/admin/blog/edit/?id=${post.id}`} className="text-primary hover:underline">編集</a>
-                  <button onClick={() => handleDelete(post)} className="text-red-400 hover:underline">削除</button>
+                  <a href={`/admin/voicedoor/edit/?id=${ep.id}`} className="text-primary hover:underline">編集</a>
+                  <button onClick={() => handleDelete(ep)} className="text-red-400 hover:underline">削除</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        {posts.length === 0 && (
-          <p className="text-center text-gray-400 py-8">記事がありません</p>
+        {episodes.length === 0 && (
+          <p className="text-center text-gray-400 py-8">エピソードがありません</p>
         )}
       </div>
     </div>

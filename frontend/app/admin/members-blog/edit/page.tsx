@@ -5,15 +5,15 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { apiRequest, ApiError } from '@/lib/api'
 import BlogForm, { BlogFormData } from '@/components/admin/BlogForm'
 
-export default function EditBlogPage() {
+export default function EditMembersBlogPage() {
   return (
     <Suspense fallback={<p className="text-gray-400">読み込み中...</p>}>
-      <EditBlogForm />
+      <EditMembersBlogForm />
     </Suspense>
   )
 }
 
-function EditBlogForm() {
+function EditMembersBlogForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const postId = searchParams.get('id')
@@ -45,7 +45,7 @@ function EditBlogForm() {
         method: 'PUT',
         body: JSON.stringify(data),
       })
-      router.push('/admin/blog')
+      router.push('/admin/members-blog')
     } catch (err) {
       const apiErr = err as ApiError
       if (apiErr.errors) {
@@ -65,7 +65,7 @@ function EditBlogForm() {
   return (
     <div className="max-w-3xl">
       <div className="flex items-center gap-3 mb-6">
-        <a href="/admin/blog" className="text-gray-400 hover:text-gray-600 text-sm">← 一覧に戻る</a>
+        <a href="/admin/members-blog" className="text-gray-400 hover:text-gray-600 text-sm">← 一覧に戻る</a>
         <h1 className="text-2xl font-semibold text-gray-900">記事編集</h1>
       </div>
       <div className="bg-white border border-gray-200 rounded-xl p-6">

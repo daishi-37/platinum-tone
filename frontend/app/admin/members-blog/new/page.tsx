@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { apiRequest, ApiError } from '@/lib/api'
 import BlogForm, { defaultBlogForm, BlogFormData } from '@/components/admin/BlogForm'
 
-export default function NewBlogPage() {
+export default function NewMembersBlogPage() {
   const router = useRouter()
   const [saving, setSaving] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -16,9 +16,9 @@ export default function NewBlogPage() {
     try {
       await apiRequest('/admin/blog', {
         method: 'POST',
-        body: JSON.stringify({ ...data, is_members_only: false }),
+        body: JSON.stringify({ ...data, is_members_only: true }),
       })
-      router.push('/admin/blog')
+      router.push('/admin/members-blog')
     } catch (err) {
       const apiErr = err as ApiError
       if (apiErr.errors) {
@@ -36,7 +36,7 @@ export default function NewBlogPage() {
   return (
     <div className="max-w-3xl">
       <div className="flex items-center gap-3 mb-6">
-        <a href="/admin/blog" className="text-gray-400 hover:text-gray-600 text-sm">← 一覧に戻る</a>
+        <a href="/admin/members-blog" className="text-gray-400 hover:text-gray-600 text-sm">← 一覧に戻る</a>
         <h1 className="text-2xl font-semibold text-gray-900">新規記事作成</h1>
       </div>
       <div className="bg-white border border-gray-200 rounded-xl p-6">
