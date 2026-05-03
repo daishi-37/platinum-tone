@@ -90,7 +90,7 @@ deploy-frontend:
 	@echo "==> フロントエンドをビルド..."
 	cd frontend && NEXT_PUBLIC_API_URL=https://api.tone-ac.com npm run build
 	@echo "==> サーバーに転送..."
-	$(RSYNC) --delete ./frontend/out/ $(REMOTE_FRONTEND)/
+	$(RSYNC) --delete --exclude='api/' ./frontend/out/ $(REMOTE_FRONTEND)/
 	@echo "✓ フロントエンドのデプロイ完了"
 
 deploy-backend:

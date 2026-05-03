@@ -1,6 +1,10 @@
 RewriteEngine On
 RewriteBase /
 
+# API・Sanctumリクエストを api/index.php（Laravel）に転送
+RewriteCond %{REQUEST_URI} ^/(api|sanctum)(/|$)
+RewriteRule ^ api/index.php [L]
+
 # 実在するファイル・ディレクトリはそのまま
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d

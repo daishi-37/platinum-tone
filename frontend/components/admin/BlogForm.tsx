@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import { useState } from 'react'
-import { apiRequest, ApiError } from '@/lib/api'
+import { apiRequest } from '@/lib/api'
 import remarkBreaks from 'remark-breaks'
 
 // SSR を避けるため動的インポート

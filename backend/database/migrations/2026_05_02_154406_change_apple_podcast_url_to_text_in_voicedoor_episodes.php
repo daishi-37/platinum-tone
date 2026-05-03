@@ -8,6 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (!Schema::hasTable('voicedoor_episodes')) {
+            return; // create migration が後で text 型で作成するため不要
+        }
         Schema::table('voicedoor_episodes', function (Blueprint $table) {
             $table->text('apple_podcast_url')->change();
         });
