@@ -29,7 +29,7 @@ export default function NewBacktalkPage() {
   }
 
   return (
-    <div className="max-w-3xl">
+    <div className="w-full">
       <div className="flex items-center gap-3 mb-6">
         <a href="/admin/backtalk" className="text-gray-400 hover:text-gray-600 text-sm">← 一覧に戻る</a>
         <h1 className="text-2xl font-semibold text-gray-900">新規エピソード作成</h1>

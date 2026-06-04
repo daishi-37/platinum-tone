@@ -55,7 +55,7 @@ function EditVoicedoorForm() {
   if (!initial) return <p className="text-gray-400">読み込み中...</p>
 
   return (
-    <div className="max-w-3xl">
+    <div className="w-full">
       <div className="flex items-center gap-3 mb-6">
         <a href="/admin/voicedoor" className="text-gray-400 hover:text-gray-600 text-sm">← 一覧に戻る</a>
         <h1 className="text-2xl font-semibold text-gray-900">エピソード編集</h1>

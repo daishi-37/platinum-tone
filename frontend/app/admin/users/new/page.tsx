@@ -46,7 +46,7 @@ export default function NewUserPage() {
   }
 
   return (
-    <div className="max-w-lg">
+    <div className="w-full">
       <div className="flex items-center gap-3 mb-6">
         <a href="/admin/users" className="text-gray-400 hover:text-gray-600 text-sm">← 一覧に戻る</a>
         <h1 className="text-2xl font-semibold text-gray-900">新規ユーザー作成</h1>

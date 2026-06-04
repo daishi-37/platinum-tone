@@ -67,21 +67,21 @@ export default function AdminUsersPage() {
       </div>
 
       <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-        <table className="w-full text-sm">
+        <table className="table-fixed w-full text-sm">
           <thead className="bg-slate-50 border-b border-gray-200">
             <tr>
               <th className="text-left px-4 py-3 text-gray-500 font-medium">名前</th>
-              <th className="text-left px-4 py-3 text-gray-500 font-medium">メール</th>
-              <th className="text-left px-4 py-3 text-gray-500 font-medium">権限</th>
-              <th className="text-left px-4 py-3 text-gray-500 font-medium">サブスク</th>
-              <th className="px-4 py-3"></th>
+              <th className="text-left px-4 py-3 text-gray-500 font-medium w-56">メール</th>
+              <th className="text-left px-4 py-3 text-gray-500 font-medium w-28">権限</th>
+              <th className="text-left px-4 py-3 text-gray-500 font-medium w-28">サブスク</th>
+              <th className="px-4 py-3 w-24"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {users.map((user) => (
               <tr key={user.id} className="hover:bg-slate-50">
-                <td className="px-4 py-3 font-medium text-gray-900">{user.name}</td>
-                <td className="px-4 py-3 text-gray-600">{user.email}</td>
+                <td className="px-4 py-3 font-medium text-gray-900 truncate">{user.name}</td>
+                <td className="px-4 py-3 text-gray-600 truncate">{user.email}</td>
                 <td className="px-4 py-3">
                   {user.is_admin
                     ? <span className="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded-full">管理者</span>

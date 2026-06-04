@@ -54,22 +54,22 @@ export default function AdminPodcastPage() {
       </div>
 
       <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-        <table className="w-full text-sm">
+        <table className="table-fixed w-full text-sm">
           <thead className="bg-slate-50 border-b border-gray-200">
             <tr>
               <th className="text-left px-4 py-3 text-gray-500 font-medium w-16">EP</th>
               <th className="text-left px-4 py-3 text-gray-500 font-medium">タイトル</th>
-              <th className="text-left px-4 py-3 text-gray-500 font-medium">尺</th>
-              <th className="text-left px-4 py-3 text-gray-500 font-medium">状態</th>
-              <th className="text-left px-4 py-3 text-gray-500 font-medium">公開日</th>
-              <th className="px-4 py-3"></th>
+              <th className="text-left px-4 py-3 text-gray-500 font-medium w-20">尺</th>
+              <th className="text-left px-4 py-3 text-gray-500 font-medium w-24">状態</th>
+              <th className="text-left px-4 py-3 text-gray-500 font-medium w-28">公開日</th>
+              <th className="px-4 py-3 w-24"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {episodes.map((ep) => (
               <tr key={ep.id} className="hover:bg-slate-50">
                 <td className="px-4 py-3 text-gray-500 font-medium">EP.{ep.episode_number}</td>
-                <td className="px-4 py-3 font-medium text-gray-900">{ep.title}</td>
+                <td className="px-4 py-3 font-medium text-gray-900 truncate">{ep.title}</td>
                 <td className="px-4 py-3 text-gray-500">{formatDuration(ep.duration_seconds)}</td>
                 <td className="px-4 py-3">
                   {ep.is_published

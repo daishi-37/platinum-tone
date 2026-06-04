@@ -47,20 +47,20 @@ export default function AdminBlogPage() {
       </div>
 
       <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
-        <table className="w-full text-sm">
+        <table className="table-fixed w-full text-sm">
           <thead className="bg-slate-50 border-b border-gray-200">
             <tr>
               <th className="text-left px-4 py-3 text-gray-500 font-medium">タイトル</th>
-              <th className="text-left px-4 py-3 text-gray-500 font-medium">種別</th>
-              <th className="text-left px-4 py-3 text-gray-500 font-medium">状態</th>
-              <th className="text-left px-4 py-3 text-gray-500 font-medium">公開日</th>
-              <th className="px-4 py-3"></th>
+              <th className="text-left px-4 py-3 text-gray-500 font-medium w-24">種別</th>
+              <th className="text-left px-4 py-3 text-gray-500 font-medium w-24">状態</th>
+              <th className="text-left px-4 py-3 text-gray-500 font-medium w-28">公開日</th>
+              <th className="px-4 py-3 w-24"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100">
             {posts.map((post) => (
               <tr key={post.id} className="hover:bg-slate-50">
-                <td className="px-4 py-3 font-medium text-gray-900">{post.title}</td>
+                <td className="px-4 py-3 font-medium text-gray-900 truncate">{post.title}</td>
                 <td className="px-4 py-3">
                   {post.is_members_only
                     ? <span className="bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded-full">会員限定</span>

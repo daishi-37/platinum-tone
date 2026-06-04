@@ -24,9 +24,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!isAdmin(user)) return notFound()
 
   return (
-    <div className="min-h-screen bg-slate-50 text-gray-900 flex">
+    <div className="h-screen w-full bg-slate-50 text-gray-900 flex overflow-hidden">
       {/* サイドバー */}
-      <aside className="w-56 shrink-0 bg-white border-r border-gray-200 flex flex-col">
+      <aside className="w-56 shrink-0 bg-white border-r border-gray-200 flex flex-col h-full">
         <div className="px-5 py-5 border-b border-gray-200">
           <span className="font-semibold text-primary">tone 管理</span>
         </div>
@@ -47,7 +47,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* メインコンテンツ */}
-      <main className="flex-1 p-8 overflow-auto">{children}</main>
+      <main className="flex-1 h-full overflow-y-auto p-8">{children}</main>
     </div>
   )
 }
