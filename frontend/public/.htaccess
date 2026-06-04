@@ -10,6 +10,14 @@ RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
+# 公開動的ルート
+RewriteRule ^blog/([^/]+)/$ /blog/_/index.html [L]
+RewriteRule ^podcast/([^/]+)/$ /podcast/_/index.html [L]
+
+# トレイリングスラッシュなしの公開ルートをリダイレクト
+RewriteRule ^blog/([^/]+)$ /blog/$1/ [R=301,L]
+RewriteRule ^podcast/([^/]+)$ /podcast/$1/ [R=301,L]
+
 # 会員動的ルート: 実IDへのアクセスをプレースホルダーのシェルで処理
 # ブラウザのURLは変わらないのでuseParams()は正しいIDを取得できる
 RewriteRule ^members/lessons/([^/]+)/$ /members/lessons/_/index.html [L]
