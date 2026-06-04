@@ -112,12 +112,23 @@
 
 **目的**: 会員が講師へ質問を投稿できるQ&A形式の掲示板。会員全員が閲覧・投稿でき、回答は講師のみ。
 
-詳細仕様は [docs/board-spec.md](board-spec.md) を参照。
+詳細仕様は [docs/board-spec.md](board-spec.md)、技術設計は [docs/board-design.md](board-design.md) を参照。
 
-| 画面 | URL |
-|------|-----|
-| 掲示板（会員） | `/board` |
-| 掲示板管理（管理者） | `/admin/board` |
+| 画面 | URL | 機能 |
+|------|-----|------|
+| 掲示板（会員） | `/board` | 左パネル＝タイムライン（質問・呼びかけ）／右パネル＝回答一覧（回答付き質問を時系列で全件表示）。会員は質問投稿（月20件）・回答なしの自分の質問の削除。管理者は左の質問を選んで回答、呼びかけ投稿、全削除。モバイルは上部タブで2ペインを切替 |
+| 掲示板管理（管理者） | `/admin/board` | 全投稿・回答の一覧表示と削除 |
+
+**投稿種別**: 質問（会員・タイムライン左寄せ）／呼びかけ（講師・右寄せ）／回答（講師・右パネルのみ）
+
+**ルール**:
+- 質問は月20件まで（毎月1日 JST リセット）。投稿後の編集不可
+- 回答なしの自分の質問のみ会員が削除可（削除しても月カウントは戻らない）
+- 質問投稿時のみ Slack チャンネルメール（`BOARD_SLACK_EMAIL`）へ通知
+
+**API**:
+- 会員: `GET/POST /api/members/board`、`GET /api/members/board/remaining`、`DELETE /api/members/board/{id}`
+- 管理者: `GET /api/admin/board`、`POST /api/admin/board/announce`、`POST /api/admin/board/{id}/answers`、`DELETE /api/admin/board/{id}`、`DELETE /api/admin/board/answers/{answerId}`
 
 ---
 
@@ -174,7 +185,7 @@ invoice.payment_failed        → status を past_due に更新
 | ポッドキャスト管理 | `/admin/podcast` | 一覧・新規・編集・削除・公開切替 |
 | バックステージ管理 | `/admin/backtalk` | 一覧・新規・編集・削除・公開切替 |
 | 声優登竜門管理 | `/admin/voicedoor` | 一覧・新規・編集・削除・公開切替 |
-| 掲示板管理 | `/admin/board` | （未実装） |
+| 掲示板管理 | `/admin/board` | 全投稿・回答の一覧表示・削除。呼びかけ／回答投稿は `/board` から実施 |
 
 **ブログ共通フォーム項目**: タイトル・スラッグ（自動生成あり）・抜粋・本文（Markdown）・サムネイルURL・公開日・公開フラグ
 
@@ -274,6 +285,26 @@ invoice.payment_failed        → status を past_due に更新
 | is_published | BOOLEAN | 公開フラグ |
 | published_at | TIMESTAMP | 公開日時 |
 
+### BoardPost（掲示板タイムライン投稿）
+
+| フィールド | 型 | 説明 |
+|-----------|-----|------|
+| id | INT | PK |
+| user_id | INT | 投稿者（FK: users、ON DELETE CASCADE） |
+| type | ENUM | `question`（質問・会員）/ `announcement`（呼びかけ・講師） |
+| body | TEXT | 本文 |
+| created_at / updated_at | TIMESTAMP | |
+
+### BoardAnswer（掲示板Q&A回答）
+
+| フィールド | 型 | 説明 |
+|-----------|-----|------|
+| id | INT | PK |
+| post_id | INT | 対象質問（FK: board_posts、ON DELETE CASCADE） |
+| user_id | INT | 回答者＝講師（FK: users、ON DELETE CASCADE） |
+| body | TEXT | 本文 |
+| created_at / updated_at | TIMESTAMP | |
+
 ---
 
 ## 5. ナビゲーション構成
@@ -313,8 +344,8 @@ invoice.payment_failed        → status を past_due に更新
 | 声優レッスン動画 | 実装済み |
 | 声優登竜門 バックステージ（会員動画） | 実装済み |
 | 声優登竜門 ポッドキャスト（公開） | 実装済み |
-| 掲示板 | **未実装**（仕様確定済み・実装待ち） |
+| 掲示板 | 実装済み |
 | Stripe サブスクリプション | 実装済み |
 | 管理画面（コンテンツ CRUD） | 実装済み |
 | 管理画面（ユーザー管理） | 実装済み |
-| 管理画面（掲示板管理） | **未実装**（仕様確定済み・実装待ち） |
+| 管理画面（掲示板管理） | 実装済み |

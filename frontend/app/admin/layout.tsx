@@ -12,6 +12,7 @@ const NAV = [
   { type: 'link',    href: '/admin/members-blog',  label: "What's 声優業界" },
   { type: 'link',    href: '/admin/backtalk',      label: '声優登竜門 バックステージ' },
   { type: 'link',    href: '/admin/board',         label: '掲示板' },
+  { type: 'link',    href: '/board',               label: '掲示板を見る' },
   { type: 'section', label: '管理メニュー' },
   { type: 'link',    href: '/admin/users',         label: 'ユーザー管理' },
 ] as const

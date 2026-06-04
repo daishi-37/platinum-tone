@@ -1,6 +1,6 @@
 # 掲示板 技術設計書
 
-> 最終更新: 2026-06-04  
+> 最終更新: 2026-06-04（実装完了・右パネルを `AnswerFeed`（回答一覧フィード）に変更）  
 > 対応仕様書: [board-spec.md](board-spec.md)
 
 ---
@@ -415,15 +415,18 @@ Mail::to(config('services.slack.board_email'))
 ```
 app/board/
 ├── page.tsx              # RequireMember でラップ
-├── BoardClient.tsx       # メインコンポーネント（左右2ペイン管理・state管理）
+├── types.ts              # 型定義 + 日付フォーマット関数
+├── BoardClient.tsx       # メインコンポーネント（2ペイン管理・state管理・モバイルタブ）
 ├── Timeline.tsx          # 左パネル：タイムライン（質問＋呼びかけ混在）
-├── PostBubble.tsx        # 吹き出し1件分（type='question'|'announcement' で見た目切替）
+├── PostBubble.tsx        # 吹き出し1件分（type='question'|'announcement' で見た目切替・しっぽ付き）
 ├── PostForm.tsx          # 投稿フォーム（会員:質問 / 管理者:呼びかけ で切替）
-└── QAThread.tsx          # 右パネル：Q&Aスレッド（管理者時は回答フォームも表示）
+└── AnswerFeed.tsx        # 右パネル：回答一覧フィード（回答付き質問を時系列で全件表示＋管理者回答フォーム）
 
 app/admin/board/
 └── page.tsx              # 管理者用：全投稿一覧・削除
 ```
+
+> 旧設計の `QAThread.tsx`（質問選択でその質問のスレッドを開く方式）は廃止し、`AnswerFeed.tsx`（常に全件を時系列表示するフィード方式）に変更した。吹き出しのしっぽは `frontend/app/globals.css` の `.chat-left` / `.chat-right`（選択中は `.chat-left-sel`）で実装。
 
 ---
 
@@ -462,13 +465,16 @@ type RemainingInfo = {
 
 ```typescript
 const [posts, setPosts]           = useState<BoardPost[]>([])
-const [selectedId, setSelectedId] = useState<number | null>(null)  // 選択中の質問ID
+const [selectedId, setSelectedId] = useState<number | null>(null)  // 管理者の回答対象の質問ID
 const [remaining, setRemaining]   = useState<RemainingInfo | null>(null)
 const [loading, setLoading]       = useState(true)
+const [mobileTab, setMobileTab]   = useState<'timeline' | 'feed'>('timeline')  // モバイルのペイン切替
 
-// 選択中の質問（呼びかけを選んでも setSelectedId しない）
+// 回答対象に選択中の質問（呼びかけは対象外）。クリックで mobileTab を 'feed' に切替
 const selectedPost = posts.find(p => p.id === selectedId && p.type === 'question') ?? null
 ```
+
+右パネル（`AnswerFeed`）は `selectedPost` に依存せず常に「回答付き質問を `created_at` 昇順で全件」表示する。`selectedPost` は管理者の回答フォームの表示対象としてのみ使用する。
 
 ---
 
@@ -487,8 +493,8 @@ const selectedPost = posts.find(p => p.id === selectedId && p.type === 'question
 ### `PostBubble.tsx` の表示切替
 
 ```tsx
-// type='question' → 左寄せ、クリックでQ&Aスレッドを開く
-// type='announcement' → 右寄せ、クリックしても何もしない
+// type='question'     → 左寄せ・白（chat-left）。クリックで回答対象に選択（管理者）
+// type='announcement' → 右寄せ・プライマリ色（chat-right）。クリックしても何もしない
 
 {post.type === 'question' && post.answers_count > 0 && (
   <span className="text-xs text-green-600 font-medium">✅ 回答あり</span>
@@ -511,26 +517,19 @@ if (isAdmin(user)) {
 
 ---
 
-### `QAThread.tsx` の管理者回答フォーム
+### `AnswerFeed.tsx`（右パネル）
+
+- `posts` から「`type==='question'` かつ `answers` が1件以上」を抽出し、`created_at` 昇順（古い→新しい）で全件表示する。
+- 各ブロックは「質問（左・白）＋その回答群（右・プライマリ色）」をまとめて描画。
+- 管理者で `selectedPost` がある場合のみ、フィード下部にその質問への回答フォームを表示（回答先の質問内容を併記、`✕` で選択解除）。
+- 回答投稿は `POST /api/admin/board/{selectedPost.id}/answers`、回答削除は `DELETE /api/admin/board/answers/{id}`。
 
 ```tsx
-{isAdmin(user) && (
-  <div className="mt-6 border-t pt-4">
-    <textarea
-      value={answerBody}
-      onChange={(e) => setAnswerBody(e.target.value)}
-      maxLength={2000}
-      placeholder="回答を入力してください"
-      rows={4}
-      className="w-full border rounded-lg p-3 text-sm resize-none"
-    />
-    <button
-      onClick={handleAnswer}
-      disabled={!answerBody.trim() || submitting}
-      className="mt-2 bg-primary text-white px-4 py-2 rounded-lg text-sm"
-    >
-      回答する
-    </button>
+{isAdmin && selectedPost && (
+  <div className="border-t border-text-main/10 p-3 bg-white">
+    {/* 回答先の質問を表示 + ✕ で選択解除 */}
+    <textarea value={body} onChange={(e) => setBody(e.target.value)} maxLength={2000} rows={3} />
+    <button onClick={handleAnswer} disabled={!body.trim() || submitting}>回答する</button>
   </div>
 )}
 ```
@@ -541,8 +540,8 @@ if (isAdmin(user)) {
 
 | ブレークポイント | レイアウト |
 |----------------|-----------|
-| `md` 以上 | 左右2ペイン（左 `w-80` 固定・右 `flex-1`） |
-| `md` 未満 | `selectedId === null` → タイムライン表示 / `selectedId !== null` → Q&Aスレッド表示 |
+| `md` 以上 | 左右2ペインを常時表示（左 `w-80` 固定・右 `flex-1`）。タブは非表示 |
+| `md` 未満 | 上部タブ（タイムライン / 回答一覧）で `mobileTab` を切替えて片方を表示。管理者が質問をタップすると `feed` タブへ自動切替 |
 
 ---
 
@@ -579,9 +578,11 @@ if (isAdmin(user)) {
 | ファイル | 役割 |
 |---------|------|
 | `app/board/page.tsx` | エントリポイント |
-| `app/board/BoardClient.tsx` | 状態管理・2ペイン制御 |
+| `app/board/types.ts` | 型定義・日付フォーマット関数 |
+| `app/board/BoardClient.tsx` | 状態管理・2ペイン制御・モバイルタブ |
 | `app/board/Timeline.tsx` | 左パネル：タイムライン |
-| `app/board/PostBubble.tsx` | 吹き出し1件分 |
+| `app/board/PostBubble.tsx` | 吹き出し1件分（しっぽ付き） |
 | `app/board/PostForm.tsx` | 投稿フォーム（会員/管理者で切替） |
-| `app/board/QAThread.tsx` | 右パネル：Q&Aスレッド |
-| `app/admin/board/page.tsx` | 管理画面：削除専用 |
+| `app/board/AnswerFeed.tsx` | 右パネル：回答一覧フィード（＋管理者回答フォーム） |
+| `app/globals.css` | 吹き出しのしっぽ（`.chat-left` / `.chat-right` / `.chat-left-sel`） |
+| `app/admin/board/page.tsx` | 管理画面：全投稿・回答一覧・削除 |

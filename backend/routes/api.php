@@ -3,10 +3,12 @@
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AdminBacktalkController;
 use App\Http\Controllers\AdminBlogController;
+use App\Http\Controllers\AdminBoardController;
 use App\Http\Controllers\AdminPodcastController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminVoicedoorController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BoardController;
 use App\Http\Controllers\ContentController;
 use App\Http\Controllers\StripeController;
 use Illuminate\Support\Facades\Route;
@@ -80,6 +82,14 @@ Route::middleware('auth:sanctum')->group(function () {
         // 会員限定ブログ
         Route::get('/blog',         [ContentController::class, 'membersPosts']);
         Route::get('/blog/{slug}',  [ContentController::class, 'membersPost']);
+
+        // 掲示板（会員）
+        Route::prefix('board')->group(function () {
+            Route::get('/',          [BoardController::class, 'index']);
+            Route::post('/',         [BoardController::class, 'store']);
+            Route::get('/remaining', [BoardController::class, 'remaining']); // /{id} より前
+            Route::delete('/{id}',   [BoardController::class, 'destroy']);
+        });
     });
 });
 
@@ -122,6 +132,15 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/voicedoor/{voicedoor}',      [AdminVoicedoorController::class, 'show']);
     Route::put('/voicedoor/{voicedoor}',      [AdminVoicedoorController::class, 'update']);
     Route::delete('/voicedoor/{voicedoor}',   [AdminVoicedoorController::class, 'destroy']);
+
+    // 掲示板管理（呼びかけ・回答・削除）
+    Route::prefix('board')->group(function () {
+        Route::get('/',                      [AdminBoardController::class, 'index']);
+        Route::post('/announce',             [AdminBoardController::class, 'announce']);        // /{id} より前
+        Route::delete('/answers/{answerId}', [AdminBoardController::class, 'destroyAnswer']);   // /{id} より前
+        Route::post('/{id}/answers',         [AdminBoardController::class, 'storeAnswer']);
+        Route::delete('/{id}',               [AdminBoardController::class, 'destroyPost']);
+    });
 
     // ユーザー管理
     Route::get('/users',                    [AdminUserController::class, 'index']);

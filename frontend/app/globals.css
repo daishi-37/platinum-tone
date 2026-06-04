@@ -32,3 +32,56 @@
     border: 1px solid rgba(45, 70, 89, 0.08);
   }
 }
+
+/* ─────────────────────────────────────────────
+   チャット吹き出しのしっぽ（掲示板）
+   ───────────────────────────────────────────── */
+
+/* 左吹き出し（生徒の質問・白／ボーダー付き）→ 左にしっぽ */
+.chat-left {
+  position: relative;
+}
+.chat-left::before {
+  /* ボーダー色の三角（外側） */
+  content: '';
+  position: absolute;
+  top: 13px;
+  left: -8px;
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-right: 8px solid rgba(45, 70, 89, 0.15);
+}
+.chat-left::after {
+  /* 塗り（内側・白）。外側より 1px 内に置きボーダーを 1px 残す */
+  content: '';
+  position: absolute;
+  top: 13px;
+  left: -7px;
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-right: 8px solid #ffffff;
+}
+/* 選択中はボーダーがプライマリ色になるため、しっぽの縁取りも合わせる */
+.chat-left-sel::before {
+  border-right-color: #97d3c3;
+}
+
+/* 右吹き出し（講師の呼びかけ・回答／プライマリ色・ボーダーなし）→ 右にしっぽ */
+.chat-right {
+  position: relative;
+}
+.chat-right::after {
+  content: '';
+  position: absolute;
+  top: 13px;
+  right: -7px;
+  width: 0;
+  height: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 8px solid #97d3c3;
+}
