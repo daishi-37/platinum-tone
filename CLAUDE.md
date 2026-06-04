@@ -2,6 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## ドキュメント管理
+
+機能の追加・変更・削除を伴う実装が完了したら、必ず `docs/requirements.md` の該当箇所を更新すること。
+更新対象の例：機能の新規追加、画面・URL変更、データモデルの変更、実装状況サマリーのステータス変更。
+
 ## プロジェクト概要
 
 **tone** — 声優オンラインアカデミーのWebサービス。月額¥9,200のサブスクリプション制で、会員限定コンテンツ（講義動画・ポッドキャスト・ブログ）へのアクセスを提供する。
