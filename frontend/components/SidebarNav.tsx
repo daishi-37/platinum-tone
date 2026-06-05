@@ -20,12 +20,11 @@ const PUBLIC_NAV: NavItem[] = [
 
 const MEMBER_NAV: NavItem[] = [
   { type: 'link',    href: '/dashboard',       label: 'ダッシュボード' },
+  { type: 'link',    href: '/blog',            label: 'ブログ' },
   { type: 'link',    href: '/members/blog',    label: "What's 声優業界" },
+  { type: 'link',    href: '/podcast',         label: '声優登竜門' },
   { type: 'link',    href: '/members/podcast', label: '声優登竜門 バックステージ' },
   { type: 'link',    href: '/board',           label: '掲示板' },
-  { type: 'section', label: '公開コンテンツ' },
-  { type: 'link',    href: '/blog',            label: 'ブログ' },
-  { type: 'link',    href: '/podcast',         label: '声優登竜門' },
 ]
 
 export default function SidebarNav() {
