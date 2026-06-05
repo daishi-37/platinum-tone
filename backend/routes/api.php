@@ -10,6 +10,7 @@ use App\Http\Controllers\AdminVoicedoorController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BoardController;
 use App\Http\Controllers\ContentController;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\StripeController;
 use Illuminate\Support\Facades\Route;
 
@@ -48,6 +49,9 @@ Route::prefix('voicedoor')->group(function () {
     Route::get('/',      [ContentController::class, 'voicedoorEpisodes']);
     Route::get('/{id}',  [ContentController::class, 'voicedoorEpisode']);
 });
+
+// ブログ本文の画像配信（認証不要）
+Route::get('/media/{filename}', [MediaController::class, 'show']);
 
 /*
 |--------------------------------------------------------------------------
@@ -111,6 +115,10 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/blog/{post}',              [AdminBlogController::class, 'show']);
     Route::put('/blog/{post}',              [AdminBlogController::class, 'update']);
     Route::delete('/blog/{post}',           [AdminBlogController::class, 'destroy']);
+
+    // ブログ画像（メディアライブラリ）
+    Route::get('/media',                    [MediaController::class, 'index']);
+    Route::post('/media',                   [MediaController::class, 'store']);
 
     // 裏トーク管理（Vimeo動画・会員限定）
     Route::post('/backtalk/slug-suggestion',   [AdminBacktalkController::class, 'slugSuggestion']);

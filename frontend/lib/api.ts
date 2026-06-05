@@ -63,3 +63,37 @@ export async function apiRequest<T>(
 
   return data as T
 }
+
+/**
+ * ファイル（FormData）を multipart/form-data で送信する
+ *
+ * Content-Type は指定せず、ブラウザに boundary 付きで設定させる。
+ *
+ * @throws {ApiError} レスポンスが 2xx 以外の場合
+ */
+export async function apiUpload<T>(path: string, formData: FormData): Promise<T> {
+  await fetchCsrfCookie()
+
+  const response = await fetch(`/api${path}`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json',
+      'X-XSRF-TOKEN': getXsrfToken(),
+    },
+    body: formData,
+  })
+
+  const data = await response.json().catch(() => ({}))
+
+  if (!response.ok) {
+    const error: ApiError = {
+      status: response.status,
+      message: data.message ?? 'アップロードに失敗しました。',
+      errors: data.errors ?? {},
+    }
+    throw error
+  }
+
+  return data as T
+}

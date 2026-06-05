@@ -1,12 +1,20 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { apiRequest } from '@/lib/api'
 import remarkBreaks from 'remark-breaks'
+import { commands } from '@uiw/react-md-editor'
+import MediaPicker from './MediaPicker'
 
 // SSR を避けるため動的インポート
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false })
+
+// デフォルトのツールバーコマンド（画像ボタンを末尾に追加する）
+const defaultCommands = commands.getCommands()
+
+// 本文に画像を挿入する textarea API（@uiw/react-md-editor）
+type TextAreaApi = { replaceSelection: (text: string) => void }
 
 export type BlogFormData = {
   title: string
@@ -40,9 +48,36 @@ export function defaultBlogForm(): BlogFormData {
 export default function BlogForm({ initial, onSubmit, saving, errors }: Props) {
   const [form, setForm] = useState<BlogFormData>(initial)
   const [slugLoading, setSlugLoading] = useState(false)
+  const [mediaOpen, setMediaOpen] = useState(false)
+  const editorApiRef = useRef<TextAreaApi | null>(null)
 
   function set<K extends keyof BlogFormData>(key: K, value: BlogFormData[K]) {
     setForm((f) => ({ ...f, [key]: value }))
+  }
+
+  // ツールバーの画像ボタン → メディアライブラリを開く
+  const imageCommand = {
+    name: 'media-library',
+    keyCommand: 'media-library',
+    buttonProps: { 'aria-label': '画像を挿入', title: '画像を挿入' },
+    icon: (
+      <svg width="13" height="13" viewBox="0 0 20 20">
+        <path
+          fill="currentColor"
+          d="M15 9c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM3 1h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2zm0 2v9.59l3.3-3.3a1 1 0 0 1 1.4 0l3.3 3.3 1.3-1.3a1 1 0 0 1 1.4 0L17 14.59V3H3z"
+        />
+      </svg>
+    ),
+    execute: (_state: unknown, api: TextAreaApi) => {
+      editorApiRef.current = api
+      setMediaOpen(true)
+    },
+  }
+
+  // メディアライブラリで選択した画像を本文（カーソル位置）に挿入
+  function insertImage(url: string, alt: string) {
+    editorApiRef.current?.replaceSelection(`![${alt}](${url})`)
+    setMediaOpen(false)
   }
 
   async function generateSlug() {
@@ -128,10 +163,13 @@ export default function BlogForm({ initial, onSubmit, saving, errors }: Props) {
             height={400}
             preview="live"
             previewOptions={{ remarkPlugins: [remarkBreaks] }}
+            commands={[...defaultCommands, imageCommand]}
           />
         </div>
         {errors.body && <p className="text-red-500 text-xs mt-1">{errors.body}</p>}
       </div>
+
+      <MediaPicker open={mediaOpen} onClose={() => setMediaOpen(false)} onSelect={insertImage} />
 
       {/* サムネイルURL */}
       <div>

@@ -189,6 +189,11 @@ invoice.payment_failed        → status を past_due に更新
 
 **ブログ共通フォーム項目**: タイトル・スラッグ（自動生成あり）・抜粋・本文（Markdown）・サムネイルURL・公開日・公開フラグ
 
+**本文への画像挿入（メディアライブラリ）**: Markdownエディタのツールバー画像ボタンから、WordPress風のメディアライブラリ（`MediaPicker`）を開ける。画像のアップロード（ドラッグ＆ドロップ／ファイル選択、JPEG/PNG/GIF/WebP・最大10MB）とアップロード済み画像の一覧選択が可能で、選択するとカーソル位置に `![代替テキスト](URL)` が挿入される。画像は `storage/app/blog/` に保存し、`/api/media/{filename}` で配信（デプロイ時の rsync 除外対象＝サーバー側で永続）。
+- `GET /api/admin/media` — アップロード済み画像一覧（管理者）
+- `POST /api/admin/media` — 画像アップロード（管理者）
+- `GET /api/media/{filename}` — 画像配信（認証不要・長期キャッシュ）
+
 **バックステージフォーム項目**: タイトル・スラッグ（自動生成あり）・説明・Vimeo URL・サムネイルURL・公開日・公開フラグ
 
 #### ユーザー管理
