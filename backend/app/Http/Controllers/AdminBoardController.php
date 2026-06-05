@@ -12,12 +12,18 @@ class AdminBoardController extends Controller
     /**
      * タイムライン一覧（管理者）
      * GET /api/admin/board
+     *
+     * 論理削除された投稿・回答も含めて返す（証拠として保持・グレーアウト表示用）。
      */
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
 
-        $posts = BoardPost::with(['user:id,name', 'answers.user:id,name'])
+        $posts = BoardPost::withTrashed()
+            ->with([
+                'user:id,name',
+                'answers' => fn ($q) => $q->withTrashed()->with('user:id,name'),
+            ])
             ->latest()
             ->get()
             ->map(fn (BoardPost $post) => $post->toTimelineArray($user));
@@ -78,7 +84,8 @@ class AdminBoardController extends Controller
     }
 
     /**
-     * 投稿削除（管理者）— 質問・呼びかけどちらも可。回答はカスケード削除。
+     * 投稿削除（管理者・論理削除）— 質問・呼びかけどちらも可。
+     * 生徒には見えなくなるが、回答も含めデータは残る。
      * DELETE /api/admin/board/{id}
      */
     public function destroyPost(int $id): JsonResponse
@@ -86,11 +93,23 @@ class AdminBoardController extends Controller
         $post = BoardPost::findOrFail($id);
         $post->delete();
 
-        return response()->json(['message' => '投稿を削除しました。']);
+        return response()->json(['message' => '投稿を非表示にしました。']);
     }
 
     /**
-     * 回答削除（管理者）
+     * 投稿の復元（管理者）
+     * POST /api/admin/board/{id}/restore
+     */
+    public function restorePost(int $id): JsonResponse
+    {
+        $post = BoardPost::withTrashed()->findOrFail($id);
+        $post->restore();
+
+        return response()->json(['message' => '投稿を復元しました。']);
+    }
+
+    /**
+     * 回答削除（管理者・論理削除）
      * DELETE /api/admin/board/answers/{answerId}
      */
     public function destroyAnswer(int $answerId): JsonResponse
@@ -98,6 +117,18 @@ class AdminBoardController extends Controller
         $answer = BoardAnswer::findOrFail($answerId);
         $answer->delete();
 
-        return response()->json(['message' => '回答を削除しました。']);
+        return response()->json(['message' => '回答を非表示にしました。']);
+    }
+
+    /**
+     * 回答の復元（管理者）
+     * POST /api/admin/board/answers/{answerId}/restore
+     */
+    public function restoreAnswer(int $answerId): JsonResponse
+    {
+        $answer = BoardAnswer::withTrashed()->findOrFail($answerId);
+        $answer->restore();
+
+        return response()->json(['message' => '回答を復元しました。']);
     }
 }

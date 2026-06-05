@@ -1,6 +1,6 @@
 # 掲示板 技術設計書
 
-> 最終更新: 2026-06-04（実装完了・右パネルを `AnswerFeed`（回答一覧フィード）に変更）  
+> 最終更新: 2026-06-06（論理削除を追加。右パネルは `AnswerFeed`（回答一覧フィード）、自動更新はスマートポーリング）  
 > 対応仕様書: [board-spec.md](board-spec.md)
 
 ---
@@ -42,9 +42,13 @@ CREATE TABLE board_answers (
 );
 ```
 
-**カスケード削除**:
-- 質問・呼びかけ削除 → 紐づく回答もすべて削除
-- ユーザー削除 → そのユーザーの投稿・回答もすべて削除
+**論理削除（ソフトデリート）**:
+- `board_posts` / `board_answers` の両方に `deleted_at` を持つ（マイグレーション `2026_06_05_000001_add_soft_deletes_to_board_tables`、モデルに `use SoftDeletes`）。
+- 削除は物理削除ではなく `deleted_at` を立てる。生徒側では非表示、管理画面では `withTrashed()` で取得して残す。
+- 投稿の論理削除では回答は連動して消えない（回答ごとに個別の `deleted_at`）。
+
+**カスケード削除（物理）**:
+- ユーザー削除（DBの ON DELETE CASCADE）→ そのユーザーの投稿・回答もすべて削除
 
 ---
 
@@ -340,20 +344,25 @@ $post = BoardPost::create([
 
 ---
 
-### 3-7. 投稿削除（管理者）`DELETE /api/admin/board/{id}`
+### 3-7. 投稿削除（管理者・論理削除）`DELETE /api/admin/board/{id}`
 
-- 質問・呼びかけどちらも削除可
-- 回答はカスケード削除
+- 質問・呼びかけどちらも対象。`deleted_at` を立てるだけで物理削除はしない。
+- 回答は連動して消えず、データとして残る。
+- 生徒側からは即時に非表示、管理画面では `withTrashed` で残る。
 
----
+### 3-7b. 投稿の復元（管理者）`POST /api/admin/board/{id}/restore`
 
-### 3-8. 回答削除（管理者）`DELETE /api/admin/board/answers/{id}`
+### 3-8. 回答削除（管理者・論理削除）`DELETE /api/admin/board/answers/{id}`
+
+### 3-8b. 回答の復元（管理者）`POST /api/admin/board/answers/{id}/restore`
+
+> 管理者の一覧 `GET /api/admin/board` は `withTrashed()` で論理削除分も返し、各投稿・回答に `is_deleted` を付与する。会員向け `GET /api/members/board`・`/version` はデフォルトスコープで論理削除分を除外する（`version` の署名も件数減で変化し、生徒のポーリングが自動で消す）。月20件の判定は `withTrashed()` で数え、削除しても戻らない。
 
 ---
 
 ## 4. ルーティング
 
-> **注意**: 固定パス（`/remaining`・`/announce`・`/answers/{id}`）はワイルドカード（`/{id}`）より**前**に定義する。
+> **注意**: 固定パス（`/remaining`・`/version`・`/announce`・`/answers/{id}...`）はワイルドカード（`/{id}`）より**前**に定義する。
 
 ```php
 // 会員向け
@@ -361,19 +370,22 @@ Route::middleware(['auth:sanctum', 'subscribed'])->prefix('members')->group(func
     Route::prefix('board')->group(function () {
         Route::get('/',           [BoardController::class, 'index']);
         Route::post('/',          [BoardController::class, 'store']);
+        Route::get('/version',    [BoardController::class, 'version']);   // /{id}より前
         Route::get('/remaining',  [BoardController::class, 'remaining']); // /{id}より前
-        Route::delete('/{id}',    [BoardController::class, 'destroy']);
+        Route::delete('/{id}',    [BoardController::class, 'destroy']);   // 論理削除
     });
 });
 
 // 管理者向け
 Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function () {
     Route::prefix('board')->group(function () {
-        Route::get('/',                      [AdminBoardController::class, 'index']);
-        Route::post('/announce',             [AdminBoardController::class, 'announce']);  // /{id}より前
-        Route::delete('/answers/{answerId}', [AdminBoardController::class, 'destroyAnswer']); // /{id}より前
-        Route::post('/{id}/answers',         [AdminBoardController::class, 'storeAnswer']);
-        Route::delete('/{id}',               [AdminBoardController::class, 'destroyPost']);
+        Route::get('/',                              [AdminBoardController::class, 'index']);
+        Route::post('/announce',                     [AdminBoardController::class, 'announce']);       // /{id}より前
+        Route::post('/answers/{answerId}/restore',   [AdminBoardController::class, 'restoreAnswer']);  // /{id}より前
+        Route::delete('/answers/{answerId}',         [AdminBoardController::class, 'destroyAnswer']);  // 論理削除
+        Route::post('/{id}/answers',                 [AdminBoardController::class, 'storeAnswer']);
+        Route::post('/{id}/restore',                 [AdminBoardController::class, 'restorePost']);
+        Route::delete('/{id}',                       [AdminBoardController::class, 'destroyPost']);    // 論理削除
     });
 });
 ```
@@ -599,6 +611,7 @@ if (isAdmin(user)) {
 | `resources/views/emails/board/new-question.blade.php` | メールテンプレート |
 | `database/migrations/..._create_board_posts_table.php` | 投稿テーブル |
 | `database/migrations/..._create_board_answers_table.php` | 回答テーブル |
+| `database/migrations/..._add_soft_deletes_to_board_tables.php` | 論理削除カラム（deleted_at）追加 |
 
 ### フロントエンド
 

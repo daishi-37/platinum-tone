@@ -136,11 +136,13 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
 
     // 掲示板管理（呼びかけ・回答・削除）
     Route::prefix('board')->group(function () {
-        Route::get('/',                      [AdminBoardController::class, 'index']);
-        Route::post('/announce',             [AdminBoardController::class, 'announce']);        // /{id} より前
-        Route::delete('/answers/{answerId}', [AdminBoardController::class, 'destroyAnswer']);   // /{id} より前
-        Route::post('/{id}/answers',         [AdminBoardController::class, 'storeAnswer']);
-        Route::delete('/{id}',               [AdminBoardController::class, 'destroyPost']);
+        Route::get('/',                              [AdminBoardController::class, 'index']);
+        Route::post('/announce',                     [AdminBoardController::class, 'announce']);        // /{id} より前
+        Route::post('/answers/{answerId}/restore',   [AdminBoardController::class, 'restoreAnswer']);   // /{id} より前
+        Route::delete('/answers/{answerId}',         [AdminBoardController::class, 'destroyAnswer']);   // /{id} より前
+        Route::post('/{id}/answers',                 [AdminBoardController::class, 'storeAnswer']);
+        Route::post('/{id}/restore',                 [AdminBoardController::class, 'restorePost']);
+        Route::delete('/{id}',                       [AdminBoardController::class, 'destroyPost']);
     });
 
     // ユーザー管理

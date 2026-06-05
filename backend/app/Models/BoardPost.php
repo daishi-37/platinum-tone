@@ -5,9 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BoardPost extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = ['user_id', 'type', 'body'];
 
     public function user(): BelongsTo
@@ -46,15 +49,21 @@ class BoardPost extends Model
             'body'          => $this->body,
             'created_at'    => $this->created_at,
             'user'          => $this->user->only('id', 'name'),
+            'is_deleted'    => $this->trashed(),
+            'deleted_at'    => $this->deleted_at,
             'answers'       => $isQuestion
                 ? $this->answers->map(fn (BoardAnswer $a) => [
                     'id'         => $a->id,
                     'body'       => $a->body,
                     'created_at' => $a->created_at,
                     'user'       => $a->user->only('id', 'name'),
+                    'is_deleted' => $a->trashed(),
                 ])->values()
                 : null,
-            'answers_count' => $isQuestion ? $this->answers->count() : null,
+            // 件数は「生徒に見える（削除されていない）回答」の数
+            'answers_count' => $isQuestion
+                ? $this->answers->filter(fn (BoardAnswer $a) => !$a->trashed())->count()
+                : null,
             'can_delete'    => $this->canBeDeletedBy($viewer),
         ];
     }

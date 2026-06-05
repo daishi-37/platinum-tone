@@ -128,10 +128,11 @@ class BoardController extends Controller
         return response()->json(['message' => '質問を削除しました。']);
     }
 
-    /** 当月の質問投稿数を取得する */
+    /** 当月の質問投稿数を取得する（削除しても戻らないよう論理削除分も数える） */
     private function monthlyQuestionCount(int $userId): int
     {
-        return BoardPost::where('user_id', $userId)
+        return BoardPost::withTrashed()
+            ->where('user_id', $userId)
             ->where('type', 'question')
             ->whereYear('created_at', now()->year)
             ->whereMonth('created_at', now()->month)
