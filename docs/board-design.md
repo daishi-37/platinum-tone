@@ -268,6 +268,19 @@ $post = BoardPost::create([
 
 ---
 
+### 3-4b. 変更チェック `GET /api/members/board/version`
+
+フロントのスマートポーリングが「変化があったときだけ」全件取得するための軽量署名。  
+投稿・回答の件数と最大IDから署名を作る（本機能は編集がないため件数＋最大IDで追加・削除を検出できる）。
+
+```json
+{ "signature": "4-4-2-2" }  // {投稿数}-{最大投稿ID}-{回答数}-{最大回答ID}
+```
+
+ルートは `/{id}` より前に定義する（`/remaining`・`/version`）。
+
+---
+
 ### 3-4. 残り投稿件数 `GET /api/members/board/remaining`
 
 ```json
@@ -475,6 +488,20 @@ const selectedPost = posts.find(p => p.id === selectedId && p.type === 'question
 ```
 
 右パネル（`AnswerFeed`）は `selectedPost` に依存せず常に「回答付き質問を `created_at` 昇順で全件」表示する。`selectedPost` は管理者の回答フォームの表示対象としてのみ使用する。
+
+---
+
+### 自動更新（スマートポーリング）
+
+チャットが古い状態で固定されないよう、`BoardClient.tsx` で以下を行う（外部依存なし・共有ホスティングでそのまま動作）。
+
+- **20秒間隔**（`POLL_INTERVAL`）で `GET /members/board/version` を叩き、署名が前回（`signatureRef`）と変わったときだけ `GET /members/board` で全件取得して反映する（無駄な全件取得を避ける）。
+- **タブが非表示の間は更新しない**（`document.hidden` を確認）。
+- **タブ復帰（`visibilitychange`）・ウィンドウフォーカス（`focus`）時に即時更新**。
+- 画面右上（モバイルはタブ列の右）に**手動更新ボタン**を併設。更新中はアイコンを回転表示（`syncing`）。
+- 入力中のテキスト（`PostForm` / `AnswerFeed` のローカル state）や `selectedId` は更新の影響を受けない。
+
+> 方式選定の経緯: フロントは静的エクスポート（CSR）、バックエンドは xserver 共有ホスティング（PHP-FPM・常駐プロセス不可）のため、自前 WebSocket（Reverb/Soketi）や SSE は不適。Q&A 掲示板は投稿頻度が低く秒単位の即時性も不要なため、スマートポーリングを採用した（外部 SaaS の Pusher/Ably はオーバースペックとして見送り）。
 
 ---
 

@@ -87,6 +87,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('board')->group(function () {
             Route::get('/',          [BoardController::class, 'index']);
             Route::post('/',         [BoardController::class, 'store']);
+            Route::get('/version',   [BoardController::class, 'version']);   // /{id} より前
             Route::get('/remaining', [BoardController::class, 'remaining']); // /{id} より前
             Route::delete('/{id}',   [BoardController::class, 'destroy']);
         });

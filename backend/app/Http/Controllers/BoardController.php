@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\NewBoardQuestionMail;
+use App\Models\BoardAnswer;
 use App\Models\BoardPost;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -69,6 +70,23 @@ class BoardController extends Controller
         $post->load(['user:id,name', 'answers.user:id,name']);
 
         return response()->json($post->toTimelineArray($user), 201);
+    }
+
+    /**
+     * 変更チェック用の軽量シグネチャ
+     * GET /api/members/board/version
+     *
+     * 投稿・回答の件数と最新IDから署名を作り、フロントのポーリングが
+     * 「変化があったときだけ」全件取得できるようにする。
+     */
+    public function version(): JsonResponse
+    {
+        $posts = BoardPost::selectRaw('COUNT(*) as c, COALESCE(MAX(id), 0) as m')->first();
+        $answers = BoardAnswer::selectRaw('COUNT(*) as c, COALESCE(MAX(id), 0) as m')->first();
+
+        $signature = sprintf('%d-%d-%d-%d', $posts->c, $posts->m, $answers->c, $answers->m);
+
+        return response()->json(['signature' => $signature]);
     }
 
     /**
