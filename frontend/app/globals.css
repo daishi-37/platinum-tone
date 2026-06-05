@@ -34,6 +34,63 @@
 }
 
 /* ─────────────────────────────────────────────
+   ブログ本文（react-markdown）の余白
+   prose クラスは @tailwindcss/typography 未導入のため、
+   管理画面プレビュー（wmde-markdown）に合わせて段落余白を補う
+   ───────────────────────────────────────────── */
+.prose > :first-child {
+  margin-top: 0;
+}
+.prose > :last-child {
+  margin-bottom: 0;
+}
+.prose p {
+  margin-top: 0;
+  margin-bottom: 1em;
+}
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  margin-top: 1.5em;
+  margin-bottom: 0.6em;
+  font-weight: 700;
+}
+.prose h1 { font-size: 1.6em; }
+.prose h2 { font-size: 1.35em; }
+.prose h3 { font-size: 1.15em; }
+.prose strong { font-weight: 700; }
+.prose ul,
+.prose ol {
+  margin-top: 0;
+  margin-bottom: 1em;
+  padding-left: 1.5em;
+}
+.prose ul { list-style: disc; }
+.prose ol { list-style: decimal; }
+.prose li {
+  margin-bottom: 0.3em;
+}
+.prose a {
+  color: #7bbfae;
+  text-decoration: underline;
+}
+.prose blockquote {
+  margin: 0 0 1em;
+  padding-left: 1em;
+  border-left: 4px solid rgba(45, 70, 89, 0.15);
+  color: #6a8699;
+}
+.prose img {
+  max-width: 100%;
+  height: auto;
+}
+.prose hr {
+  margin: 1.5em 0;
+  border-top: 1px solid rgba(45, 70, 89, 0.12);
+}
+
+/* ─────────────────────────────────────────────
    チャット吹き出しのしっぽ（掲示板）
    ───────────────────────────────────────────── */
 
