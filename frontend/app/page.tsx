@@ -74,7 +74,7 @@ export default function Home() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-4">
             {[
               { title: "最先端の業界情報", desc: "全国どこにいても、最先端の声優業界情報を得ることができます。", image: "/assets/images/features1.webp" },
-              { title: "月二回全体ミーティング", desc: "月2回のミーティングで、講師2人から直接アドバイスをもらえます。（アーカイブあり）", image: "/assets/images/features2.webp" },
+              { title: "月１回全体ミーティング", desc: "月１回のミーティングで、講師2人から直接アドバイスをもらえます。（アーカイブあり）", image: "/assets/images/features2.webp" },
               { title: "Podcast配信", desc: "podcast「声優登竜門バックステージ」を聞くことができます。", image: "/assets/images/features3.webp" },
               { title: "個別グループレッスンへの参加", desc: "オプション（別途料金）", image: "/assets/images/features4.webp" },
             ].map((item) => (
@@ -125,7 +125,7 @@ export default function Home() {
                 </div>
               </div>
               <ul className="text-sm space-y-2 mb-5">
-                {["全デジタルコンテンツへのアクセス", "月二回全体ミーティング（アーカイブ付き）", "会員限定Podcast・動画"].map((f) => (
+                {["全デジタルコンテンツへのアクセス", "月１回全体ミーティング（アーカイブ付き）", "会員限定Podcast・動画"].map((f) => (
                   <li key={f} className="flex items-start gap-2 text-text-main">
                     <span className="text-accent mt-0.5">✓</span>{f}
                   </li>

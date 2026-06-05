@@ -41,7 +41,7 @@ export default function BillingSuccessPage() {
           </div>
           <div className="flex items-center gap-3 text-sm text-text-main">
             <span className="text-accent text-lg">✓</span>
-            <span>月二回の全体ミーティング（アーカイブあり）</span>
+            <span>月１回の全体ミーティング（アーカイブあり）</span>
           </div>
         </div>
 
