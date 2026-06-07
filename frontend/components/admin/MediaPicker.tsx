@@ -15,6 +15,10 @@ type Props = {
   onClose: () => void
   /** 画像を選択したとき。url は /api/media/xxx の相対パス */
   onSelect: (url: string, alt: string) => void
+  /** ヘッダーのタイトル（既定: 画像を挿入） */
+  title?: string
+  /** 代替テキスト入力欄を表示するか（本文挿入用。既定: true） */
+  showAlt?: boolean
 }
 
 /**
@@ -22,7 +26,7 @@ type Props = {
  * - アップロード（ドラッグ＆ドロップ / ファイル選択）
  * - アップロード済み画像の一覧から選択
  */
-export default function MediaPicker({ open, onClose, onSelect }: Props) {
+export default function MediaPicker({ open, onClose, onSelect, title = '画像を挿入', showAlt = true }: Props) {
   const [items, setItems] = useState<MediaItem[]>([])
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -111,7 +115,7 @@ export default function MediaPicker({ open, onClose, onSelect }: Props) {
       >
         {/* ヘッダー */}
         <div className="flex items-center justify-between border-b border-gray-200 px-5 py-3">
-          <h2 className="text-base font-semibold text-gray-800">画像を挿入</h2>
+          <h2 className="text-base font-semibold text-gray-800">{title}</h2>
           <button
             type="button"
             onClick={onClose}
@@ -193,13 +197,17 @@ export default function MediaPicker({ open, onClose, onSelect }: Props) {
 
         {/* フッター */}
         <div className="flex items-center gap-3 border-t border-gray-200 px-5 py-3">
-          <input
-            type="text"
-            value={alt}
-            onChange={(e) => setAlt(e.target.value)}
-            placeholder="代替テキスト（任意）"
-            className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-          />
+          {showAlt ? (
+            <input
+              type="text"
+              value={alt}
+              onChange={(e) => setAlt(e.target.value)}
+              placeholder="代替テキスト（任意）"
+              className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          ) : (
+            <span className="flex-1" />
+          )}
           <button
             type="button"
             onClick={onClose}

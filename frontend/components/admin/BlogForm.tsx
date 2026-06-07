@@ -49,6 +49,7 @@ export default function BlogForm({ initial, onSubmit, saving, errors }: Props) {
   const [form, setForm] = useState<BlogFormData>(initial)
   const [slugLoading, setSlugLoading] = useState(false)
   const [mediaOpen, setMediaOpen] = useState(false)
+  const [thumbOpen, setThumbOpen] = useState(false)
   const editorApiRef = useRef<TextAreaApi | null>(null)
 
   function set<K extends keyof BlogFormData>(key: K, value: BlogFormData[K]) {
@@ -174,14 +175,42 @@ export default function BlogForm({ initial, onSubmit, saving, errors }: Props) {
       {/* サムネイルURL */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">サムネイルURL</label>
-        <input
-          type="text"
-          value={form.thumbnail_url}
-          onChange={(e) => set('thumbnail_url', e.target.value)}
-          placeholder="https://..."
-          className={field(errors.thumbnail_url)}
-        />
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={form.thumbnail_url}
+            onChange={(e) => set('thumbnail_url', e.target.value)}
+            placeholder="https://... または画像を選択"
+            className={field(errors.thumbnail_url) + ' flex-1'}
+          />
+          <button
+            type="button"
+            onClick={() => setThumbOpen(true)}
+            className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-slate-50 whitespace-nowrap"
+          >
+            画像を選択
+          </button>
+        </div>
+        {form.thumbnail_url && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={form.thumbnail_url}
+            alt="サムネイルプレビュー"
+            className="mt-2 h-28 w-auto rounded-lg border border-gray-200 object-cover"
+          />
+        )}
       </div>
+
+      <MediaPicker
+        open={thumbOpen}
+        onClose={() => setThumbOpen(false)}
+        onSelect={(url) => {
+          set('thumbnail_url', url)
+          setThumbOpen(false)
+        }}
+        title="サムネイルを選択"
+        showAlt={false}
+      />
 
       {/* 公開設定 */}
       <div className="bg-slate-50 rounded-xl p-4 space-y-3">
