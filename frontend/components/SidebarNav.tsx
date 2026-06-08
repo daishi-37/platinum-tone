@@ -21,6 +21,7 @@ const PUBLIC_NAV: NavItem[] = [
 const MEMBER_NAV: NavItem[] = [
   { type: 'link',    href: '/dashboard',       label: 'ダッシュボード' },
   { type: 'link',    href: '/blog',            label: 'ブログ' },
+  { type: 'link',    href: '/members/lessons', label: '声優レッスン動画' },
   { type: 'link',    href: '/members/blog',    label: "What's 声優業界" },
   { type: 'link',    href: '/podcast',         label: '声優登竜門' },
   { type: 'link',    href: '/members/podcast', label: '声優登竜門 バックステージ' },

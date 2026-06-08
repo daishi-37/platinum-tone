@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AdminBacktalkController;
 use App\Http\Controllers\AdminBlogController;
 use App\Http\Controllers\AdminBoardController;
+use App\Http\Controllers\AdminLessonController;
 use App\Http\Controllers\AdminPodcastController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminVoicedoorController;
@@ -75,9 +76,14 @@ Route::middleware('auth:sanctum')->group(function () {
     |--------------------------------------------------------------------------
     */
     Route::middleware('subscribed')->prefix('members')->group(function () {
-        // レッスン動画
+        // レッスン動画（AES-HLS）
         Route::get('/lessons',     [ContentController::class, 'lessons']);
-        Route::get('/lessons/{id}', [ContentController::class, 'lesson']);
+        // HLS配信（/{slug} より前に定義）
+        Route::get('/lessons/{slug}/playlist.m3u8', [ContentController::class, 'lessonPlaylist']);
+        Route::get('/lessons/{slug}/key',           [ContentController::class, 'lessonKey']);
+        Route::get('/lessons/{slug}/{segment}',     [ContentController::class, 'lessonSegment'])
+            ->where('segment', 'seg_\d+\.ts');
+        Route::get('/lessons/{slug}',    [ContentController::class, 'lesson']);
 
         // 声優登竜門 裏トーク（AES-HLS音声）
         Route::get('/podcast',           [ContentController::class, 'backtalkEpisodes']);
@@ -124,6 +130,15 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     // ブログ画像（メディアライブラリ）
     Route::get('/media',                    [MediaController::class, 'index']);
     Route::post('/media',                   [MediaController::class, 'store']);
+
+    // レッスン動画管理（AES-HLS動画・会員限定）
+    Route::post('/lessons/slug-suggestion', [AdminLessonController::class, 'slugSuggestion']);
+    Route::get('/lessons',                  [AdminLessonController::class, 'index']);
+    Route::post('/lessons',                 [AdminLessonController::class, 'store']);
+    Route::get('/lessons/{lesson}',         [AdminLessonController::class, 'show']);
+    Route::put('/lessons/{lesson}',         [AdminLessonController::class, 'update']);
+    Route::post('/lessons/{lesson}/hls',    [AdminLessonController::class, 'uploadHls']);
+    Route::delete('/lessons/{lesson}',      [AdminLessonController::class, 'destroy']);
 
     // 裏トーク管理（AES-HLS音声・会員限定）
     Route::post('/backtalk/slug-suggestion',   [AdminBacktalkController::class, 'slugSuggestion']);

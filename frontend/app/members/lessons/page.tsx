@@ -8,10 +8,11 @@ import RequireMember from '@/components/RequireMember'
 type Lesson = {
   id: number
   title: string
-  description: string
-  vimeo_id: string
+  slug: string
+  description: string | null
   thumbnail_url: string | null
   sort_order: number
+  hls_ready: boolean
 }
 
 function LessonsContent() {
@@ -44,11 +45,11 @@ function LessonsContent() {
           {lessons.map((lesson) => (
             <Link
               key={lesson.id}
-              href={`/members/lessons/${lesson.id}`}
+              href={`/members/lessons/${lesson.slug}`}
               className="card p-5 flex items-center gap-5 hover:shadow-md transition-shadow group"
             >
-              {/* サムネイル or Vimeo プレビュー */}
-              <div className="w-28 h-16 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden">
+              {/* サムネイル */}
+              <div className="w-28 h-16 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden relative">
                 {lesson.thumbnail_url ? (
                   <img src={lesson.thumbnail_url} alt={lesson.title} className="w-full h-full object-cover" />
                 ) : (
@@ -56,6 +57,11 @@ function LessonsContent() {
                     🎬
                   </div>
                 )}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-9 h-9 rounded-full bg-black/50 flex items-center justify-center">
+                    <span className="text-white text-base ml-0.5">▶</span>
+                  </div>
+                </div>
               </div>
 
               <div className="flex-1 min-w-0">
@@ -63,7 +69,9 @@ function LessonsContent() {
                 <h2 className="font-bold text-text-main group-hover:text-primary transition-colors line-clamp-1">
                   {lesson.title}
                 </h2>
-                <p className="text-text-sub text-sm mt-1 line-clamp-2">{lesson.description}</p>
+                {lesson.description && (
+                  <p className="text-text-sub text-sm mt-1 line-clamp-2">{lesson.description}</p>
+                )}
               </div>
 
               <span className="text-text-sub text-xl flex-shrink-0">›</span>

@@ -8,10 +8,12 @@ class Lesson extends Model
 {
     protected $fillable = [
         'title',
+        'slug',
         'description',
         'vimeo_id',
         'thumbnail_url',
         'sort_order',
+        'hls_ready',
         'is_published',
     ];
 
@@ -19,6 +21,7 @@ class Lesson extends Model
     {
         return [
             'is_published' => 'boolean',
+            'hls_ready'    => 'boolean',
         ];
     }
 

@@ -19,15 +19,87 @@ class ContentController extends Controller
     public function lessons(): JsonResponse
     {
         $lessons = Lesson::published()->get([
-            'id', 'title', 'description', 'vimeo_id', 'thumbnail_url', 'sort_order',
+            'id', 'title', 'slug', 'description', 'vimeo_id', 'thumbnail_url', 'sort_order', 'hls_ready',
         ]);
         return response()->json($lessons);
     }
 
-    public function lesson(int $id): JsonResponse
+    public function lesson(string $slug): JsonResponse
     {
-        $lesson = Lesson::published()->findOrFail($id);
+        $lesson = Lesson::published()
+            ->where('slug', $slug)
+            ->firstOrFail();
+
+        // AES-HLS が準備済みなら、再生用プレイリストURLを付与
+        if ($lesson->hls_ready) {
+            $lesson->hls_url = url('/api/members/lessons/' . $lesson->slug . '/playlist.m3u8');
+        }
+
         return response()->json($lesson);
+    }
+
+    /** slug のディレクトリトラバーサル対策（半角英数字・ハイフンのみ許可） */
+    private function lessonDir(string $slug): string
+    {
+        abort_if(!preg_match('/^[a-z0-9\-]+$/', $slug), 400);
+        return storage_path('app/lessons/' . $slug);
+    }
+
+    /**
+     * HLS プレイリスト配信（会員限定）
+     * GET /api/members/lessons/{slug}/playlist.m3u8
+     */
+    public function lessonPlaylist(string $slug): \Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        $path = $this->lessonDir($slug) . '/playlist.m3u8';
+        abort_if(!file_exists($path), 404);
+
+        return response()->stream(function () use ($path) {
+            readfile($path);
+        }, 200, [
+            'Content-Type'  => 'application/vnd.apple.mpegurl',
+            'Cache-Control' => 'no-store',
+        ]);
+    }
+
+    /**
+     * HLS セグメント配信（会員限定・AES暗号化済み）
+     * GET /api/members/lessons/{slug}/{segment}
+     */
+    public function lessonSegment(string $slug, string $segment): \Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        // セグメント名は seg_000.ts 形式のみ許可
+        abort_if(!preg_match('/^seg_\d+\.ts$/', $segment), 400);
+
+        $path = $this->lessonDir($slug) . '/' . $segment;
+        abort_if(!file_exists($path), 404);
+
+        return response()->stream(function () use ($path) {
+            readfile($path);
+        }, 200, [
+            'Content-Type'  => 'video/mp2t',
+            'Cache-Control' => 'no-store',
+        ]);
+    }
+
+    /**
+     * HLS 復号鍵の配信（会員限定）
+     * GET /api/members/lessons/{slug}/key
+     *
+     * このエンドポイントが auth:sanctum + subscribed で保護されることで、
+     * 非会員はセグメントを復号できない（＝ダウンロードしても再生不可）。
+     */
+    public function lessonKey(string $slug): \Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        $path = $this->lessonDir($slug) . '/enc.key';
+        abort_if(!file_exists($path), 404);
+
+        return response()->stream(function () use ($path) {
+            readfile($path);
+        }, 200, [
+            'Content-Type'  => 'application/octet-stream',
+            'Cache-Control' => 'no-store',
+        ]);
     }
 
     // ─────────────────────────────────────────────────────────────────────

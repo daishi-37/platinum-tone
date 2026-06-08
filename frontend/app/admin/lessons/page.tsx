@@ -1,0 +1,83 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { apiRequest, ApiError } from '@/lib/api'
+
+type LessonRow = {
+  id: number
+  title: string
+  slug: string
+  sort_order: number
+  is_published: boolean
+}
+
+export default function AdminLessonsPage() {
+  const [lessons, setLessons] = useState<LessonRow[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    apiRequest<LessonRow[]>('/admin/lessons')
+      .then(setLessons)
+      .catch((e: ApiError) => setError(e.message))
+      .finally(() => setLoading(false))
+  }, [])
+
+  async function handleDelete(lesson: LessonRow) {
+    if (!confirm(`「${lesson.title}」を削除しますか？`)) return
+    try {
+      await apiRequest(`/admin/lessons/${lesson.id}`, { method: 'DELETE' })
+      setLessons((prev) => prev.filter((l) => l.id !== lesson.id))
+    } catch (e) {
+      alert((e as ApiError).message)
+    }
+  }
+
+  if (loading) return <p className="text-gray-400">読み込み中...</p>
+  if (error)   return <p className="text-red-500">{error}</p>
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-semibold text-gray-900">声優レッスン動画</h1>
+        <a href="/admin/lessons/new" className="bg-primary hover:bg-primary-hover text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
+          + 新規作成
+        </a>
+      </div>
+
+      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+        <table className="table-fixed w-full text-sm">
+          <thead className="bg-slate-50 border-b border-gray-200">
+            <tr>
+              <th className="text-left px-4 py-3 text-gray-500 font-medium w-16">順</th>
+              <th className="text-left px-4 py-3 text-gray-500 font-medium">タイトル</th>
+              <th className="text-left px-4 py-3 text-gray-500 font-medium w-24">状態</th>
+              <th className="px-4 py-3 w-24"></th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {lessons.map((lesson) => (
+              <tr key={lesson.id} className="hover:bg-slate-50">
+                <td className="px-4 py-3 text-gray-500">{lesson.sort_order}</td>
+                <td className="px-4 py-3 font-medium text-gray-900 truncate">{lesson.title}</td>
+                <td className="px-4 py-3">
+                  {lesson.is_published
+                    ? <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">公開中</span>
+                    : <span className="bg-yellow-100 text-yellow-700 text-xs px-2 py-1 rounded-full">下書き</span>
+                  }
+                </td>
+                <td className="px-4 py-3 text-right space-x-2">
+                  <a href={`/admin/lessons/edit/?id=${lesson.id}`} className="text-primary hover:underline">編集</a>
+                  <button onClick={() => handleDelete(lesson)} className="text-red-400 hover:underline">削除</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {lessons.length === 0 && (
+          <p className="text-center text-gray-400 py-8">レッスンがありません</p>
+        )}
+      </div>
+    </div>
+  )
+}

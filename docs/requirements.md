@@ -68,15 +68,26 @@
 
 ### 3-4. 声優レッスン動画
 
-**目的**: 講師による直接指導動画（Vimeo）を会員限定で提供。
+**目的**: 講師による直接指導動画を会員限定で提供。ダウンロード対策として **AES-128 暗号化 HLS** で配信する。
 
 | 画面 | URL | 機能 |
 |------|-----|------|
 | 一覧 | `/members/lessons` | `sort_order` 順にリスト表示（サムネイル・回数・タイトル・説明） |
-| 詳細 | `/members/lessons/[id]` | Vimeo プレーヤー埋め込み再生 |
+| 詳細 | `/members/lessons/[slug]` | hls.js プレーヤーで動画再生 + 説明文（Markdown レンダリング、HLS未準備時は「準備中」表示） |
+
+**AES-HLS 配信の仕組み（B方式・ハイブリッド）**:
+1. ローカルで `scripts/encrypt-hls-video.sh <動画.mp4> <slug>` を実行し、映像+音声 AES-128 HLS（`playlist.m3u8` / `seg_*.ts` / `enc.key`）を生成して zip 化
+2. 管理画面の編集フォームから zip をアップロード → サーバーが `storage/app/lessons/{slug}/` に展開（`hls_ready=true`）
+3. 配信エンドポイント（すべて `auth:sanctum + subscribed` で保護）:
+   - `GET /api/members/lessons/{slug}/playlist.m3u8` — プレイリスト
+   - `GET /api/members/lessons/{slug}/{segment}` — 暗号化セグメント（`seg_*.ts`）
+   - `GET /api/members/lessons/{slug}/key` — 復号鍵（**会員のみ取得可＝非会員は復号不可**）
+
+> 新レッスンを公開するまでの具体的な運用手順は [docs/hls-video-guide.md](hls-video-guide.md) を参照。
 
 **データ**:
-- タイトル・説明・Vimeo ID・サムネイルURL・並び順（sort_order）・公開フラグ
+- タイトル・スラッグ・説明（Markdown）・サムネイルURL・並び順（sort_order）・`hls_ready`（HLS準備済みフラグ）・公開フラグ
+- 旧 `vimeo_id` は nullable で残置（過去データ互換用）
 
 ---
 
@@ -194,6 +205,7 @@ invoice.payment_failed        → status を past_due に更新
 |------|------|------|
 | 公開ブログ管理 | `/admin/blog` | 一覧・新規・編集・削除・公開切替 |
 | 会員限定ブログ管理 | `/admin/members-blog` | 一覧・新規・編集・削除・公開切替 |
+| レッスン動画管理 | `/admin/lessons` | 一覧・新規・編集・削除・公開切替 |
 | ポッドキャスト管理 | `/admin/podcast` | 一覧・新規・編集・削除・公開切替 |
 | バックステージ管理 | `/admin/backtalk` | 一覧・新規・編集・削除・公開切替 |
 | 声優登竜門管理 | `/admin/voicedoor` | 一覧・新規・編集・削除・公開切替 |
@@ -211,6 +223,10 @@ invoice.payment_failed        → status を past_due に更新
 **バックステージフォーム項目**: タイトル・スラッグ（自動生成あり）・説明（Markdownエディタ）・**音声（暗号化HLS zip）アップロード**・サムネイルURL・公開日・公開フラグ
 
 - `POST /api/admin/backtalk/{id}/hls` — AES-HLS zip をアップロードして `storage/app/backtalk/{slug}/` に展開（管理者）
+
+**レッスン動画フォーム項目**: タイトル・スラッグ（自動生成あり）・説明（Markdownエディタ）・**動画（暗号化HLS zip）アップロード**・サムネイルURL・並び順（sort_order）・公開フラグ
+
+- `POST /api/admin/lessons/{id}/hls` — AES-HLS zip をアップロードして `storage/app/lessons/{slug}/` に展開（管理者）
 
 #### ユーザー管理
 
@@ -262,9 +278,11 @@ invoice.payment_failed        → status を past_due に更新
 |-----------|-----|------|
 | id | INT | PK |
 | title | VARCHAR | タイトル |
-| description | TEXT | 説明 |
-| vimeo_id | VARCHAR | Vimeo 動画ID |
+| slug | VARCHAR | URLスラッグ（ユニーク・AES-HLS配信ディレクトリ名にも使用） |
+| description | TEXT | 説明（Markdown） |
+| vimeo_id | VARCHAR | Vimeo 動画ID（nullable・旧方式の互換用） |
 | thumbnail_url | VARCHAR | サムネイルURL |
+| hls_ready | BOOLEAN | AES-HLS 配信が準備済みか（zip展開成功でtrue） |
 | sort_order | SMALLINT | 表示順 |
 | is_published | BOOLEAN | 公開フラグ |
 
