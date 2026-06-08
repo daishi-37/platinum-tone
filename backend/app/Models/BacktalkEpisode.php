@@ -12,6 +12,7 @@ class BacktalkEpisode extends Model
         'description',
         'vimeo_url',
         'thumbnail_url',
+        'hls_ready',
         'is_published',
         'published_at',
     ];
@@ -20,6 +21,7 @@ class BacktalkEpisode extends Model
     {
         return [
             'is_published' => 'boolean',
+            'hls_ready'    => 'boolean',
             'published_at' => 'datetime',
         ];
     }

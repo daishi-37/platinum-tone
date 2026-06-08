@@ -79,8 +79,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/lessons',     [ContentController::class, 'lessons']);
         Route::get('/lessons/{id}', [ContentController::class, 'lesson']);
 
-        // 声優登竜門 裏トーク（Vimeo動画）
+        // 声優登竜門 裏トーク（AES-HLS / 旧Vimeo動画）
         Route::get('/podcast',           [ContentController::class, 'backtalkEpisodes']);
+        // HLS配信（/{slug} より前に定義）
+        Route::get('/podcast/{slug}/playlist.m3u8', [ContentController::class, 'backtalkPlaylist']);
+        Route::get('/podcast/{slug}/key',           [ContentController::class, 'backtalkKey']);
+        Route::get('/podcast/{slug}/{segment}',     [ContentController::class, 'backtalkSegment'])
+            ->where('segment', 'seg_\d+\.ts');
         Route::get('/podcast/{slug}',    [ContentController::class, 'backtalkEpisode']);
 
         // 会員限定ブログ
@@ -126,6 +131,7 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::post('/backtalk',                   [AdminBacktalkController::class, 'store']);
     Route::get('/backtalk/{backtalk}',         [AdminBacktalkController::class, 'show']);
     Route::put('/backtalk/{backtalk}',         [AdminBacktalkController::class, 'update']);
+    Route::post('/backtalk/{backtalk}/hls',    [AdminBacktalkController::class, 'uploadHls']);
     Route::delete('/backtalk/{backtalk}',      [AdminBacktalkController::class, 'destroy']);
 
     // ポッドキャスト管理

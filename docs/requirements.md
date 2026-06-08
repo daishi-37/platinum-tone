@@ -80,17 +80,27 @@
 
 ---
 
-### 3-5. 声優登竜門 バックステージ（会員限定動画）
+### 3-5. 声優登竜門 バックステージ（会員限定音声）
 
-**目的**: 声優登竜門の舞台裏・補足コンテンツを Vimeo 動画で提供（会員限定）。
+**目的**: 声優登竜門の舞台裏・補足コンテンツを会員限定で提供。ダウンロード対策として **AES-128 暗号化 HLS** で配信する（旧方式の Vimeo 動画埋め込みもフォールバックとして併存）。
 
 | 画面 | URL | 機能 |
 |------|-----|------|
-| 一覧 | `/members/podcast` | 動画カードをグリッド表示（サムネイル・再生ボタン・タイトル・説明・日付） |
-| 詳細 | `/members/podcast/[slug]` | Vimeo プレーヤー埋め込み再生 + 説明文 |
+| 一覧 | `/members/podcast` | カードをグリッド表示（サムネイル・再生ボタン・タイトル・説明・日付） |
+| 詳細 | `/members/podcast/[slug]` | `hls_ready` なら hls.js プレーヤーで再生、未設定なら Vimeo 埋め込み再生 + 説明文 |
+
+**AES-HLS 配信の仕組み（B方式・ハイブリッド）**:
+1. ローカルで `scripts/encrypt-hls.sh <音声.mp3> <slug>` を実行し、音声のみ AES-128 HLS（`playlist.m3u8` / `seg_*.ts` / `enc.key`）を生成して zip 化
+2. 管理画面の編集フォームから zip をアップロード → サーバーが `storage/app/backtalk/{slug}/` に展開（`hls_ready=true`）
+3. 配信エンドポイント（すべて `auth:sanctum + subscribed` で保護）:
+   - `GET /api/members/podcast/{slug}/playlist.m3u8` — プレイリスト
+   - `GET /api/members/podcast/{slug}/{segment}` — 暗号化セグメント（`seg_*.ts`）
+   - `GET /api/members/podcast/{slug}/key` — 復号鍵（**会員のみ取得可＝非会員は復号不可**）
+
+> **今後のアップデート予定（A方式）**: 現状の B方式はアップロード前にローカルでスクリプト実行が必要で、SE（技術者）でないと運用できない。将来は管理画面で MP3 をアップロードするだけで、サーバー側 ffmpeg が暗号化 HLS 化まで完結する方式に移行したい。xserver（共有レンタル）は ffmpeg 未導入・apt 不可のため、静的 ffmpeg バイナリ設置・`shell_exec` 可否・キュー処理の実機調査が前提。
 
 **データ**:
-- タイトル・スラッグ・説明・Vimeo URL・サムネイルURL・公開日
+- タイトル・スラッグ・説明・サムネイルURL・公開日・`hls_ready`（HLS準備済みフラグ）・Vimeo URL（旧方式・任意）
 
 ---
 
@@ -196,7 +206,9 @@ invoice.payment_failed        → status を past_due に更新
 - `POST /api/admin/media` — 画像アップロード（管理者）
 - `GET /api/media/{filename}` — 画像配信（認証不要・長期キャッシュ）
 
-**バックステージフォーム項目**: タイトル・スラッグ（自動生成あり）・説明・Vimeo URL・サムネイルURL・公開日・公開フラグ
+**バックステージフォーム項目**: タイトル・スラッグ（自動生成あり）・説明・**音声（暗号化HLS zip）アップロード**・Vimeo URL（旧方式・任意）・サムネイルURL・公開日・公開フラグ
+
+- `POST /api/admin/backtalk/{id}/hls` — AES-HLS zip をアップロードして `storage/app/backtalk/{slug}/` に展開（管理者）
 
 #### ユーザー管理
 
@@ -262,8 +274,9 @@ invoice.payment_failed        → status を past_due に更新
 | title | VARCHAR | タイトル |
 | slug | VARCHAR | URLスラッグ（ユニーク） |
 | description | TEXT | 説明 |
-| vimeo_url | VARCHAR | Vimeo URL |
+| vimeo_url | VARCHAR(nullable) | Vimeo URL（旧方式・任意） |
 | thumbnail_url | VARCHAR | サムネイルURL |
+| hls_ready | BOOLEAN | AES-HLS 配信が準備済みか（zip展開成功でtrue） |
 | is_published | BOOLEAN | 公開フラグ |
 | published_at | TIMESTAMP | 公開日時 |
 

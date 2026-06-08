@@ -202,7 +202,76 @@ class ContentController extends Controller
             ->where('slug', $slug)
             ->firstOrFail();
 
+        // AES-HLS が準備済みなら、再生用プレイリストURLを付与
+        if ($episode->hls_ready) {
+            $episode->hls_url = url('/api/members/podcast/' . $episode->slug . '/playlist.m3u8');
+        }
+
         return response()->json($episode);
+    }
+
+    /** slug のディレクトリトラバーサル対策（半角英数字・ハイフンのみ許可） */
+    private function backtalkDir(string $slug): string
+    {
+        abort_if(!preg_match('/^[a-z0-9\-]+$/', $slug), 400);
+        return storage_path('app/backtalk/' . $slug);
+    }
+
+    /**
+     * HLS プレイリスト配信（会員限定）
+     * GET /api/members/podcast/{slug}/playlist.m3u8
+     */
+    public function backtalkPlaylist(string $slug): \Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        $path = $this->backtalkDir($slug) . '/playlist.m3u8';
+        abort_if(!file_exists($path), 404);
+
+        return response()->stream(function () use ($path) {
+            readfile($path);
+        }, 200, [
+            'Content-Type'  => 'application/vnd.apple.mpegurl',
+            'Cache-Control' => 'no-store',
+        ]);
+    }
+
+    /**
+     * HLS セグメント配信（会員限定・AES暗号化済み）
+     * GET /api/members/podcast/{slug}/{segment}
+     */
+    public function backtalkSegment(string $slug, string $segment): \Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        // セグメント名は seg_000.ts 形式のみ許可
+        abort_if(!preg_match('/^seg_\d+\.ts$/', $segment), 400);
+
+        $path = $this->backtalkDir($slug) . '/' . $segment;
+        abort_if(!file_exists($path), 404);
+
+        return response()->stream(function () use ($path) {
+            readfile($path);
+        }, 200, [
+            'Content-Type'  => 'video/mp2t',
+            'Cache-Control' => 'no-store',
+        ]);
+    }
+
+    /**
+     * HLS 復号鍵の配信（会員限定）
+     * GET /api/members/podcast/{slug}/key
+     *
+     * このエンドポイントが auth:sanctum + subscribed で保護されることで、
+     * 非会員はセグメントを復号できない（＝ダウンロードしても再生不可）。
+     */
+    public function backtalkKey(string $slug): \Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        $path = $this->backtalkDir($slug) . '/enc.key';
+        abort_if(!file_exists($path), 404);
+
+        return response()->stream(function () use ($path) {
+            readfile($path);
+        }, 200, [
+            'Content-Type'  => 'application/octet-stream',
+            'Cache-Control' => 'no-store',
+        ]);
     }
 
     // ─────────────────────────────────────────────────────────────────────

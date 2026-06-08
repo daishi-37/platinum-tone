@@ -15,7 +15,9 @@ export type BacktalkFormData = {
 
 type Props = {
   initial: BacktalkFormData
-  onSubmit: (data: BacktalkFormData) => Promise<void>
+  /** 編集時、HLSが既にアップロード済みか */
+  initialHlsReady?: boolean
+  onSubmit: (data: BacktalkFormData, hlsFile: File | null) => Promise<void>
   saving: boolean
   errors: Record<string, string>
 }
@@ -41,8 +43,9 @@ function getVimeoEmbedUrl(url: string): string {
     : `https://player.vimeo.com/video/${match[1]}`
 }
 
-export default function BacktalkForm({ initial, onSubmit, saving, errors }: Props) {
+export default function BacktalkForm({ initial, initialHlsReady, onSubmit, saving, errors }: Props) {
   const [form, setForm] = useState<BacktalkFormData>(initial)
+  const [hlsFile, setHlsFile] = useState<File | null>(null)
   const [slugLoading, setSlugLoading] = useState(false)
 
   function set<K extends keyof BacktalkFormData>(key: K, value: BacktalkFormData[K]) {
@@ -67,7 +70,7 @@ export default function BacktalkForm({ initial, onSubmit, saving, errors }: Prop
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    onSubmit(form)
+    onSubmit(form, hlsFile)
   }
 
   return (
@@ -122,34 +125,62 @@ export default function BacktalkForm({ initial, onSubmit, saving, errors }: Prop
         />
       </div>
 
-      {/* Vimeo URL */}
-      <div>
+      {/* HLS音声アップロード（メイン） */}
+      <div className="border border-primary/40 bg-primary/5 rounded-xl p-4">
         <label className="block text-sm font-medium text-gray-700 mb-1">
-          Vimeo URL
-          <span className="text-gray-400 font-normal text-xs ml-2">（例: https://vimeo.com/123456789）</span>
+          音声（暗号化HLS zip）
+          {initialHlsReady && (
+            <span className="ml-2 text-xs text-green-600 font-semibold">アップロード済み</span>
+          )}
         </label>
+        <p className="text-xs text-gray-500 mb-2 leading-relaxed">
+          ローカルで <code className="bg-slate-100 px-1 rounded">scripts/encrypt-hls.sh 音声.mp3 スラッグ</code> を実行して生成した
+          <code className="bg-slate-100 px-1 rounded mx-1">スラッグ.zip</code> を選択してください。
+          {initialHlsReady && '（新しく選択すると差し替わります）'}
+        </p>
         <input
-          type="text"
-          value={form.vimeo_url}
-          onChange={(e) => set('vimeo_url', e.target.value)}
-          required
-          placeholder="https://vimeo.com/123456789"
-          className={field(errors.vimeo_url)}
+          type="file"
+          accept=".zip,application/zip"
+          onChange={(e) => setHlsFile(e.target.files?.[0] ?? null)}
+          className="block w-full text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-primary file:text-white file:text-sm file:font-semibold hover:file:bg-primary-hover"
         />
-        {errors.vimeo_url && <p className="text-red-500 text-xs mt-1">{errors.vimeo_url}</p>}
-
-        {/* プレビュー */}
-        {embedUrl && (
-          <div className="mt-3 rounded-xl overflow-hidden bg-black aspect-video">
-            <iframe
-              src={embedUrl}
-              className="w-full h-full"
-              allow="autoplay; fullscreen; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
+        {hlsFile && (
+          <p className="text-xs text-gray-600 mt-2">選択中: {hlsFile.name}（{(hlsFile.size / 1024 / 1024).toFixed(1)} MB）</p>
         )}
+        {errors.file && <p className="text-red-500 text-xs mt-1">{errors.file}</p>}
       </div>
+
+      {/* Vimeo URL（旧方式・任意） */}
+      <details className="rounded-xl border border-gray-200 p-4">
+        <summary className="text-sm font-medium text-gray-600 cursor-pointer">
+          Vimeo URL（旧方式・任意）
+        </summary>
+        <div className="mt-3">
+          <p className="text-xs text-gray-400 mb-2">
+            HLS zip を使う場合は不要です。旧Vimeo動画を引き続き使う場合のみ入力してください。
+          </p>
+          <input
+            type="text"
+            value={form.vimeo_url}
+            onChange={(e) => set('vimeo_url', e.target.value)}
+            placeholder="https://vimeo.com/123456789"
+            className={field(errors.vimeo_url)}
+          />
+          {errors.vimeo_url && <p className="text-red-500 text-xs mt-1">{errors.vimeo_url}</p>}
+
+          {/* プレビュー */}
+          {embedUrl && (
+            <div className="mt-3 rounded-xl overflow-hidden bg-black aspect-video">
+              <iframe
+                src={embedUrl}
+                className="w-full h-full"
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          )}
+        </div>
+      </details>
 
       {/* サムネイルURL */}
       <div>

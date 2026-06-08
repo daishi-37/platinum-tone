@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import Hls from 'hls.js'
 import { apiRequest } from '@/lib/api'
 import RequireMember from '@/components/RequireMember'
 
@@ -10,7 +11,10 @@ type Episode = {
   title: string
   slug: string
   description: string | null
-  vimeo_url: string
+  vimeo_url: string | null
+  hls_url?: string | null
+  hls_ready: boolean
+  thumbnail_url: string | null
   published_at: string
 }
 
@@ -20,6 +24,46 @@ function getVimeoEmbedUrl(url: string): string {
   return match[2]
     ? `https://player.vimeo.com/video/${match[1]}?h=${match[2]}`
     : `https://player.vimeo.com/video/${match[1]}`
+}
+
+/** AES-HLS 音声プレーヤー（hls.js / Safariネイティブ対応） */
+function HlsAudioPlayer({ src, poster }: { src: string; poster: string | null }) {
+  const audioRef = useRef<HTMLAudioElement>(null)
+
+  useEffect(() => {
+    const audio = audioRef.current
+    if (!audio) return
+
+    // 同一オリジン配信のため Cookie は自動送信されるが、念のため withCredentials を有効化
+    if (Hls.isSupported()) {
+      const hls = new Hls({
+        xhrSetup: (xhr) => {
+          xhr.withCredentials = true
+        },
+      })
+      hls.loadSource(src)
+      hls.attachMedia(audio)
+      return () => hls.destroy()
+    } else if (audio.canPlayType('application/vnd.apple.mpegurl')) {
+      // Safari はネイティブHLS再生
+      audio.src = src
+    }
+  }, [src])
+
+  return (
+    <div className="rounded-xl overflow-hidden bg-section-bg mb-6 p-6">
+      {poster && (
+        <img src={poster} alt="" className="w-full max-h-72 object-cover rounded-lg mb-4" />
+      )}
+      <audio
+        ref={audioRef}
+        controls
+        controlsList="nodownload noplaybackrate"
+        onContextMenu={(e) => e.preventDefault()}
+        className="w-full"
+      />
+    </div>
+  )
 }
 
 function BacktalkDetailContent() {
@@ -48,9 +92,9 @@ function BacktalkDetailContent() {
     )
   }
 
-  if (!episode) return <p className="p-8 text-text-sub">動画が見つかりません。</p>
+  if (!episode) return <p className="p-8 text-text-sub">コンテンツが見つかりません。</p>
 
-  const embedUrl = getVimeoEmbedUrl(episode.vimeo_url)
+  const embedUrl = episode.vimeo_url ? getVimeoEmbedUrl(episode.vimeo_url) : ''
 
   return (
     <main className="max-w-3xl mx-auto px-6 py-10">
@@ -63,7 +107,9 @@ function BacktalkDetailContent() {
       </p>
       <h1 className="text-2xl font-bold text-text-main mb-6">{episode.title}</h1>
 
-      {embedUrl ? (
+      {episode.hls_ready && episode.hls_url ? (
+        <HlsAudioPlayer src={episode.hls_url} poster={episode.thumbnail_url} />
+      ) : embedUrl ? (
         <div className="rounded-xl overflow-hidden bg-black aspect-video mb-6">
           <iframe
             src={embedUrl}
@@ -73,7 +119,7 @@ function BacktalkDetailContent() {
           />
         </div>
       ) : (
-        <p className="text-text-sub mb-6">動画を読み込めませんでした。</p>
+        <p className="text-text-sub mb-6">コンテンツを読み込めませんでした。</p>
       )}
 
       {episode.description && (

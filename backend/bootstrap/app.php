@@ -17,7 +17,15 @@ return Application::configure(basePath: dirname(__DIR__))
             'subscribed' => \App\Http\Middleware\RequireSubscription::class,
             'admin'      => \App\Http\Middleware\AdminMiddleware::class,
         ]);
+        // API専用アプリのため login ルートは存在しない。
+        // 未認証ゲストをリダイレクトせず（route('login') の解決で500になるのを防ぐ）、
+        // 後段の例外ハンドラで 401 JSON を返させる。
+        $middleware->redirectGuestsTo(fn () => null);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // API ルートは常に JSON で応答する（未認証時に login ルートへリダイレクトして
+        // 500 になるのを防ぎ、401/403 を正しく返す）。
+        $exceptions->shouldRenderJsonWhen(
+            fn ($request, $throwable) => $request->is('api/*') || $request->expectsJson()
+        );
     })->create();

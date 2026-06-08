@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { apiRequest, ApiError } from '@/lib/api'
+import { apiRequest, apiUpload, ApiError } from '@/lib/api'
 import BacktalkForm, { defaultBacktalkForm, BacktalkFormData } from '@/components/admin/BacktalkForm'
 
 export default function NewBacktalkPage() {
@@ -10,11 +10,19 @@ export default function NewBacktalkPage() {
   const [saving, setSaving] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
-  async function handleSubmit(data: BacktalkFormData) {
+  async function handleSubmit(data: BacktalkFormData, hlsFile: File | null) {
     setSaving(true)
     setErrors({})
     try {
-      await apiRequest('/admin/backtalk', { method: 'POST', body: JSON.stringify(data) })
+      const created = await apiRequest<{ id: number }>('/admin/backtalk', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      })
+      if (hlsFile) {
+        const fd = new FormData()
+        fd.append('file', hlsFile)
+        await apiUpload(`/admin/backtalk/${created.id}/hls`, fd)
+      }
       router.push('/admin/backtalk')
     } catch (err) {
       const apiErr = err as ApiError

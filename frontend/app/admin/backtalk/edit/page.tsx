@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { apiRequest, ApiError } from '@/lib/api'
+import { apiRequest, apiUpload, ApiError } from '@/lib/api'
 import BacktalkForm, { BacktalkFormData } from '@/components/admin/BacktalkForm'
 
 export default function EditBacktalkPage() {
@@ -18,29 +18,36 @@ function EditBacktalkForm() {
   const searchParams = useSearchParams()
   const episodeId = searchParams.get('id')
   const [initial, setInitial] = useState<BacktalkFormData | null>(null)
+  const [hlsReady, setHlsReady] = useState(false)
   const [saving, setSaving] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   useEffect(() => {
     if (!episodeId) return
-    apiRequest<BacktalkFormData & { published_at: string | null }>(`/admin/backtalk/${episodeId}`).then((ep) => {
+    apiRequest<BacktalkFormData & { published_at: string | null; hls_ready?: boolean }>(`/admin/backtalk/${episodeId}`).then((ep) => {
       setInitial({
         title:         ep.title,
         slug:          ep.slug,
         description:   ep.description ?? '',
-        vimeo_url:     ep.vimeo_url,
+        vimeo_url:     ep.vimeo_url ?? '',
         thumbnail_url: ep.thumbnail_url ?? '',
         is_published:  ep.is_published,
         published_at:  ep.published_at ? ep.published_at.slice(0, 16) : '',
       })
+      setHlsReady(!!ep.hls_ready)
     })
   }, [episodeId])
 
-  async function handleSubmit(data: BacktalkFormData) {
+  async function handleSubmit(data: BacktalkFormData, hlsFile: File | null) {
     setSaving(true)
     setErrors({})
     try {
       await apiRequest(`/admin/backtalk/${episodeId}`, { method: 'PUT', body: JSON.stringify(data) })
+      if (hlsFile) {
+        const fd = new FormData()
+        fd.append('file', hlsFile)
+        await apiUpload(`/admin/backtalk/${episodeId}/hls`, fd)
+      }
       router.push('/admin/backtalk')
     } catch (err) {
       const apiErr = err as ApiError
@@ -63,7 +70,7 @@ function EditBacktalkForm() {
         <h1 className="text-2xl font-semibold text-gray-900">エピソード編集</h1>
       </div>
       <div className="bg-white border border-gray-200 rounded-xl p-6">
-        <BacktalkForm initial={initial} onSubmit={handleSubmit} saving={saving} errors={errors} />
+        <BacktalkForm initial={initial} initialHlsReady={hlsReady} onSubmit={handleSubmit} saving={saving} errors={errors} />
       </div>
     </div>
   )
