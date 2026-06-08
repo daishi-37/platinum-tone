@@ -97,6 +97,8 @@
    - `GET /api/members/podcast/{slug}/{segment}` — 暗号化セグメント（`seg_*.ts`）
    - `GET /api/members/podcast/{slug}/key` — 復号鍵（**会員のみ取得可＝非会員は復号不可**）
 
+> 新エピソードを公開するまでの具体的な運用手順は [docs/hls-audio-guide.md](hls-audio-guide.md) を参照。
+
 > **今後のアップデート予定（A方式）**: 現状の B方式はアップロード前にローカルでスクリプト実行が必要で、SE（技術者）でないと運用できない。将来は管理画面で MP3 をアップロードするだけで、サーバー側 ffmpeg が暗号化 HLS 化まで完結する方式に移行したい。xserver（共有レンタル）は ffmpeg 未導入・apt 不可のため、静的 ffmpeg バイナリ設置・`shell_exec` 可否・キュー処理の実機調査が前提。
 
 **データ**:
