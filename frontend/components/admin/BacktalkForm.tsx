@@ -1,7 +1,14 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { useState } from 'react'
+import remarkGfm from 'remark-gfm'
+import remarkBreaks from 'remark-breaks'
 import { apiRequest } from '@/lib/api'
+import MediaPicker from './MediaPicker'
+
+// SSR を避けるため動的インポート
+const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false })
 
 export type BacktalkFormData = {
   title: string
@@ -36,6 +43,7 @@ export default function BacktalkForm({ initial, initialHlsReady, onSubmit, savin
   const [form, setForm] = useState<BacktalkFormData>(initial)
   const [hlsFile, setHlsFile] = useState<File | null>(null)
   const [slugLoading, setSlugLoading] = useState(false)
+  const [thumbOpen, setThumbOpen] = useState(false)
 
   function set<K extends keyof BacktalkFormData>(key: K, value: BacktalkFormData[K]) {
     setForm((f) => ({ ...f, [key]: value }))
@@ -101,15 +109,21 @@ export default function BacktalkForm({ initial, initialHlsReady, onSubmit, savin
         {errors.slug && <p className="text-red-500 text-xs mt-1">{errors.slug}</p>}
       </div>
 
-      {/* 説明文 */}
+      {/* 説明文（Markdownエディタ） */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">説明文</label>
-        <textarea
-          value={form.description}
-          onChange={(e) => set('description', e.target.value)}
-          rows={3}
-          className={field(errors.description)}
-        />
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          説明文 <span className="text-gray-400 font-normal text-xs">（Markdown対応）</span>
+        </label>
+        <div data-color-mode="light">
+          <MDEditor
+            value={form.description}
+            onChange={(v) => set('description', v ?? '')}
+            height={240}
+            preview="live"
+            previewOptions={{ remarkPlugins: [remarkGfm, remarkBreaks] }}
+          />
+        </div>
+        {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
       </div>
 
       {/* HLS音声アップロード（メイン） */}
@@ -140,14 +154,42 @@ export default function BacktalkForm({ initial, initialHlsReady, onSubmit, savin
       {/* サムネイルURL */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">サムネイルURL</label>
-        <input
-          type="text"
-          value={form.thumbnail_url}
-          onChange={(e) => set('thumbnail_url', e.target.value)}
-          placeholder="https://..."
-          className={field(errors.thumbnail_url)}
-        />
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={form.thumbnail_url}
+            onChange={(e) => set('thumbnail_url', e.target.value)}
+            placeholder="https://... または画像を選択"
+            className={field(errors.thumbnail_url) + ' flex-1'}
+          />
+          <button
+            type="button"
+            onClick={() => setThumbOpen(true)}
+            className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-slate-50 whitespace-nowrap"
+          >
+            画像を選択
+          </button>
+        </div>
+        {form.thumbnail_url && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={form.thumbnail_url}
+            alt="サムネイルプレビュー"
+            className="mt-2 h-28 w-auto rounded-lg border border-gray-200 object-cover"
+          />
+        )}
       </div>
+
+      <MediaPicker
+        open={thumbOpen}
+        onClose={() => setThumbOpen(false)}
+        onSelect={(url) => {
+          set('thumbnail_url', url)
+          setThumbOpen(false)
+        }}
+        title="サムネイルを選択"
+        showAlt={false}
+      />
 
       {/* 公開設定 */}
       <div className="bg-slate-50 rounded-xl p-4 space-y-3">

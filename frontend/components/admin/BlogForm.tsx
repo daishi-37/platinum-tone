@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic'
 import { useRef, useState } from 'react'
 import { apiRequest } from '@/lib/api'
+import remarkGfm from 'remark-gfm'
 import remarkBreaks from 'remark-breaks'
 import { commands } from '@uiw/react-md-editor'
 import MediaPicker from './MediaPicker'
@@ -163,7 +164,7 @@ export default function BlogForm({ initial, onSubmit, saving, errors }: Props) {
             onChange={(v) => set('body', v ?? '')}
             height={400}
             preview="live"
-            previewOptions={{ remarkPlugins: [remarkBreaks] }}
+            previewOptions={{ remarkPlugins: [remarkGfm, remarkBreaks] }}
             commands={[...defaultCommands, imageCommand]}
           />
         </div>

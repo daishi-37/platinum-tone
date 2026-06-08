@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import remarkBreaks from 'remark-breaks'
 import { apiRequest } from '@/lib/api'
 
@@ -64,7 +65,7 @@ export default function BlogDetailClient() {
       <h1 className="text-2xl font-bold text-text-main mb-8">{post.title}</h1>
 
       <div className="card p-8 prose prose-sm max-w-none text-text-main leading-relaxed">
-        <ReactMarkdown remarkPlugins={[remarkBreaks]}>{post.body}</ReactMarkdown>
+        <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>{post.body}</ReactMarkdown>
       </div>
     </main>
   )

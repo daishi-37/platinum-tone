@@ -89,6 +89,25 @@
   margin: 1.5em 0;
   border-top: 1px solid rgba(45, 70, 89, 0.12);
 }
+.prose table {
+  width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+  font-size: 0.95em;
+  display: block;
+  overflow-x: auto;
+}
+.prose th,
+.prose td {
+  padding: 0.5em 0.75em;
+  border: 1px solid rgba(45, 70, 89, 0.15);
+  text-align: left;
+  vertical-align: top;
+}
+.prose th {
+  background: rgba(45, 70, 89, 0.05);
+  font-weight: 700;
+}
 
 /* ─────────────────────────────────────────────
    チャット吹き出しのしっぽ（掲示板）

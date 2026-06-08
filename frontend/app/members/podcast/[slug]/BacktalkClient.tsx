@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import Hls from 'hls.js'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import remarkBreaks from 'remark-breaks'
 import { apiRequest } from '@/lib/api'
 import RequireMember from '@/components/RequireMember'
 
@@ -103,8 +106,8 @@ function BacktalkDetailContent() {
       )}
 
       {episode.description && (
-        <div className="card p-6 text-text-main text-sm leading-relaxed whitespace-pre-wrap">
-          {episode.description}
+        <div className="card p-6 prose prose-sm max-w-none text-text-main leading-relaxed">
+          <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>{episode.description}</ReactMarkdown>
         </div>
       )}
     </main>

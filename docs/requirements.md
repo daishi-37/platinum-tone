@@ -87,7 +87,7 @@
 | 画面 | URL | 機能 |
 |------|-----|------|
 | 一覧 | `/members/podcast` | カードをグリッド表示（サムネイル・再生ボタン・タイトル・説明・日付） |
-| 詳細 | `/members/podcast/[slug]` | hls.js プレーヤーで音声再生 + 説明文（HLS未準備時は「準備中」表示） |
+| 詳細 | `/members/podcast/[slug]` | hls.js プレーヤーで音声再生 + 説明文（Markdown レンダリング、HLS未準備時は「準備中」表示） |
 
 **AES-HLS 配信の仕組み（B方式・ハイブリッド）**:
 1. ローカルで `scripts/encrypt-hls.sh <音声.mp3> <slug>` を実行し、音声のみ AES-128 HLS（`playlist.m3u8` / `seg_*.ts` / `enc.key`）を生成して zip 化
@@ -206,7 +206,7 @@ invoice.payment_failed        → status を past_due に更新
 - `POST /api/admin/media` — 画像アップロード（管理者）
 - `GET /api/media/{filename}` — 画像配信（認証不要・長期キャッシュ）
 
-**バックステージフォーム項目**: タイトル・スラッグ（自動生成あり）・説明・**音声（暗号化HLS zip）アップロード**・サムネイルURL・公開日・公開フラグ
+**バックステージフォーム項目**: タイトル・スラッグ（自動生成あり）・説明（Markdownエディタ）・**音声（暗号化HLS zip）アップロード**・サムネイルURL・公開日・公開フラグ
 
 - `POST /api/admin/backtalk/{id}/hls` — AES-HLS zip をアップロードして `storage/app/backtalk/{slug}/` に展開（管理者）
 
