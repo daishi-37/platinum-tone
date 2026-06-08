@@ -29,7 +29,6 @@ function EditBacktalkForm() {
         title:         ep.title,
         slug:          ep.slug,
         description:   ep.description ?? '',
-        vimeo_url:     ep.vimeo_url ?? '',
         thumbnail_url: ep.thumbnail_url ?? '',
         is_published:  ep.is_published,
         published_at:  ep.published_at ? ep.published_at.slice(0, 16) : '',

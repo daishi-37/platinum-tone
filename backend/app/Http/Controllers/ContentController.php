@@ -185,7 +185,7 @@ class ContentController extends Controller
     }
 
     // ─────────────────────────────────────────────────────────────────────
-    // 声優登竜門 裏トーク（会員限定・Vimeo動画）
+    // 声優登竜門 裏トーク（会員限定・AES-HLS音声）
     // ─────────────────────────────────────────────────────────────────────
 
     public function backtalkEpisodes(): JsonResponse

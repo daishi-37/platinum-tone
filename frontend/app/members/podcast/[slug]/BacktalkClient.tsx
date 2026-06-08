@@ -11,19 +11,10 @@ type Episode = {
   title: string
   slug: string
   description: string | null
-  vimeo_url: string | null
   hls_url?: string | null
   hls_ready: boolean
   thumbnail_url: string | null
   published_at: string
-}
-
-function getVimeoEmbedUrl(url: string): string {
-  const match = url.match(/vimeo\.com\/(\d+)(?:\/([a-f0-9]+))?/)
-  if (!match) return ''
-  return match[2]
-    ? `https://player.vimeo.com/video/${match[1]}?h=${match[2]}`
-    : `https://player.vimeo.com/video/${match[1]}`
 }
 
 /** AES-HLS 音声プレーヤー（hls.js / Safariネイティブ対応） */
@@ -94,8 +85,6 @@ function BacktalkDetailContent() {
 
   if (!episode) return <p className="p-8 text-text-sub">コンテンツが見つかりません。</p>
 
-  const embedUrl = episode.vimeo_url ? getVimeoEmbedUrl(episode.vimeo_url) : ''
-
   return (
     <main className="max-w-3xl mx-auto px-6 py-10">
       <Link href="/members/podcast" className="text-sm text-text-sub hover:text-primary transition-colors mb-6 inline-block">
@@ -109,17 +98,8 @@ function BacktalkDetailContent() {
 
       {episode.hls_ready && episode.hls_url ? (
         <HlsAudioPlayer src={episode.hls_url} poster={episode.thumbnail_url} />
-      ) : embedUrl ? (
-        <div className="rounded-xl overflow-hidden bg-black aspect-video mb-6">
-          <iframe
-            src={embedUrl}
-            className="w-full h-full"
-            allow="autoplay; fullscreen; picture-in-picture"
-            allowFullScreen
-          />
-        </div>
       ) : (
-        <p className="text-text-sub mb-6">コンテンツを読み込めませんでした。</p>
+        <p className="text-text-sub mb-6">音声を準備中です。</p>
       )}
 
       {episode.description && (

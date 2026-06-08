@@ -10,7 +10,6 @@ class BacktalkEpisode extends Model
         'title',
         'slug',
         'description',
-        'vimeo_url',
         'thumbnail_url',
         'hls_ready',
         'is_published',

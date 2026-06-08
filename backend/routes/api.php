@@ -79,7 +79,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/lessons',     [ContentController::class, 'lessons']);
         Route::get('/lessons/{id}', [ContentController::class, 'lesson']);
 
-        // 声優登竜門 裏トーク（AES-HLS / 旧Vimeo動画）
+        // 声優登竜門 裏トーク（AES-HLS音声）
         Route::get('/podcast',           [ContentController::class, 'backtalkEpisodes']);
         // HLS配信（/{slug} より前に定義）
         Route::get('/podcast/{slug}/playlist.m3u8', [ContentController::class, 'backtalkPlaylist']);
@@ -125,7 +125,7 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('admin')->group(function ()
     Route::get('/media',                    [MediaController::class, 'index']);
     Route::post('/media',                   [MediaController::class, 'store']);
 
-    // 裏トーク管理（Vimeo動画・会員限定）
+    // 裏トーク管理（AES-HLS音声・会員限定）
     Route::post('/backtalk/slug-suggestion',   [AdminBacktalkController::class, 'slugSuggestion']);
     Route::get('/backtalk',                    [AdminBacktalkController::class, 'index']);
     Route::post('/backtalk',                   [AdminBacktalkController::class, 'store']);

@@ -7,7 +7,6 @@ export type BacktalkFormData = {
   title: string
   slug: string
   description: string
-  vimeo_url: string
   thumbnail_url: string
   is_published: boolean
   published_at: string
@@ -27,20 +26,10 @@ export function defaultBacktalkForm(): BacktalkFormData {
     title: '',
     slug: '',
     description: '',
-    vimeo_url: '',
     thumbnail_url: '',
     is_published: false,
     published_at: '',
   }
-}
-
-function getVimeoEmbedUrl(url: string): string {
-  // https://vimeo.com/123456789 または https://vimeo.com/123456789/abcdef (非公開)
-  const match = url.match(/vimeo\.com\/(\d+)(?:\/([a-f0-9]+))?/)
-  if (!match) return ''
-  return match[2]
-    ? `https://player.vimeo.com/video/${match[1]}?h=${match[2]}`
-    : `https://player.vimeo.com/video/${match[1]}`
 }
 
 export default function BacktalkForm({ initial, initialHlsReady, onSubmit, saving, errors }: Props) {
@@ -65,8 +54,6 @@ export default function BacktalkForm({ initial, initialHlsReady, onSubmit, savin
       setSlugLoading(false)
     }
   }
-
-  const embedUrl = getVimeoEmbedUrl(form.vimeo_url)
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -149,38 +136,6 @@ export default function BacktalkForm({ initial, initialHlsReady, onSubmit, savin
         )}
         {errors.file && <p className="text-red-500 text-xs mt-1">{errors.file}</p>}
       </div>
-
-      {/* Vimeo URL（旧方式・任意） */}
-      <details className="rounded-xl border border-gray-200 p-4">
-        <summary className="text-sm font-medium text-gray-600 cursor-pointer">
-          Vimeo URL（旧方式・任意）
-        </summary>
-        <div className="mt-3">
-          <p className="text-xs text-gray-400 mb-2">
-            HLS zip を使う場合は不要です。旧Vimeo動画を引き続き使う場合のみ入力してください。
-          </p>
-          <input
-            type="text"
-            value={form.vimeo_url}
-            onChange={(e) => set('vimeo_url', e.target.value)}
-            placeholder="https://vimeo.com/123456789"
-            className={field(errors.vimeo_url)}
-          />
-          {errors.vimeo_url && <p className="text-red-500 text-xs mt-1">{errors.vimeo_url}</p>}
-
-          {/* プレビュー */}
-          {embedUrl && (
-            <div className="mt-3 rounded-xl overflow-hidden bg-black aspect-video">
-              <iframe
-                src={embedUrl}
-                className="w-full h-full"
-                allow="autoplay; fullscreen; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-          )}
-        </div>
-      </details>
 
       {/* サムネイルURL */}
       <div>
