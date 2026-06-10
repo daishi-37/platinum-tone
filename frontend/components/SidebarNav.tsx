@@ -14,7 +14,7 @@ const PUBLIC_NAV: NavItem[] = [
   { type: 'link', href: '/#features',    label: 'できること' },
   { type: 'link', href: '/#plan',        label: 'プラン・料金' },
   { type: 'link', href: '/#contents',    label: 'コンテンツ' },
-  { type: 'link', href: '/blog',         label: "What's 声優業界" },
+  { type: 'link', href: '/blog',         label: "ブログ" },
   { type: 'link', href: '/podcast',      label: 'Podcast' },
 ]
 
@@ -24,7 +24,7 @@ const MEMBER_NAV: NavItem[] = [
   { type: 'link',    href: '/members/lessons', label: '声優レッスン動画' },
   { type: 'link',    href: '/members/blog',    label: "What's 声優業界" },
   { type: 'link',    href: '/podcast',         label: '声優登竜門' },
-  { type: 'link',    href: '/members/podcast', label: '声優登竜門 バックステージ' },
+  { type: 'link',    href: '/members/podcast', label: '声優登竜門 backstage' },
   { type: 'link',    href: '/board',           label: '掲示板' },
 ]
 
