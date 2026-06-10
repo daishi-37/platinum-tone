@@ -34,10 +34,10 @@ function BacktalkListContent() {
     <main className="max-w-4xl mx-auto px-6 py-12">
       <p className="text-text-sub text-xs tracking-widest uppercase mb-2">Members</p>
       <h1 className="text-2xl font-bold text-text-main mb-2">声優登竜門 バックステージ</h1>
-      <p className="text-text-sub text-sm mb-10">会員限定の動画コンテンツをお届けします。</p>
+      <p className="text-text-sub text-sm mb-10">会員限定の音声コンテンツをお届けします。</p>
 
       {episodes.length === 0 ? (
-        <p className="text-text-sub">動画を準備中です。</p>
+        <p className="text-text-sub">音声を準備中です。</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {episodes.map((ep) => (
