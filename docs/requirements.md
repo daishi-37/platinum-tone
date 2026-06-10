@@ -73,7 +73,7 @@
 | 画面 | URL | 機能 |
 |------|-----|------|
 | 一覧 | `/members/lessons` | `sort_order` 順にリスト表示（サムネイル・回数・タイトル・説明） |
-| 詳細 | `/members/lessons/[slug]` | hls.js プレーヤーで動画再生 + 説明文（Markdown レンダリング、HLS未準備時は「準備中」表示） |
+| 詳細 | `/members/lessons/[slug]` | hls.js カスタムプレーヤーで動画再生（再生/一時停止・シークバー・10秒スキップ・1〜2倍速の再生速度切替・音量・全画面）+ 説明文（Markdown レンダリング、HLS未準備時は「準備中」表示） |
 
 **AES-HLS 配信の仕組み（B方式・ハイブリッド）**:
 1. ローカルで `scripts/encrypt-hls-video.sh <動画.mp4> <slug>` を実行し、映像+音声 AES-128 HLS（`playlist.m3u8` / `seg_*.ts` / `enc.key`）を生成して zip 化
@@ -98,7 +98,7 @@
 | 画面 | URL | 機能 |
 |------|-----|------|
 | 一覧 | `/members/podcast` | カードをグリッド表示（サムネイル・再生ボタン・タイトル・説明・日付） |
-| 詳細 | `/members/podcast/[slug]` | hls.js プレーヤーで音声再生 + 説明文（Markdown レンダリング、HLS未準備時は「準備中」表示） |
+| 詳細 | `/members/podcast/[slug]` | hls.js カスタムプレーヤーで音声再生（再生/一時停止・シークバー・10秒スキップ・1〜2倍速の再生速度切替）+ 説明文（Markdown レンダリング、HLS未準備時は「準備中」表示） |
 
 **AES-HLS 配信の仕組み（B方式・ハイブリッド）**:
 1. ローカルで `scripts/encrypt-hls.sh <音声.mp3> <slug>` を実行し、音声のみ AES-128 HLS（`playlist.m3u8` / `seg_*.ts` / `enc.key`）を生成して zip 化
