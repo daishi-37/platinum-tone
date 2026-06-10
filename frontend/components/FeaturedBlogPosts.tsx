@@ -24,7 +24,7 @@ export default function FeaturedBlogPosts() {
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-bold text-primary border-l-4 border-primary pl-3 text-sm">What&apos;s 声優業界</h3>
+        <h3 className="font-bold text-primary border-l-4 border-primary pl-3 text-sm">ブログ</h3>
         <Link href="/blog" className="text-xs text-text-sub hover:text-primary transition-colors">
           一覧を見る →
         </Link>

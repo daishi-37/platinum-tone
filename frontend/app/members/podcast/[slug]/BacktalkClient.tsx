@@ -245,7 +245,7 @@ function BacktalkDetailContent() {
   return (
     <main className="max-w-3xl mx-auto px-6 py-10">
       <Link href="/members/podcast" className="text-sm text-text-sub hover:text-primary transition-colors mb-6 inline-block">
-        ← 声優登竜門 バックステージ 一覧へ
+        ← 声優登竜門 backstage 一覧へ
       </Link>
 
       <p className="text-xs text-text-sub mb-2">

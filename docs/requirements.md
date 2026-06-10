@@ -355,7 +355,7 @@ invoice.payment_failed        → status を past_due に更新
 - できること（`/#features`）
 - プラン・料金（`/#plan`）
 - コンテンツ（`/#contents`）
-- What's 声優業界（`/blog`）
+- ブログ（`/blog`）
 - Podcast（`/podcast`）
 - ログイン / 新規登録
 - 入会 CTA（月額 ¥9,200）

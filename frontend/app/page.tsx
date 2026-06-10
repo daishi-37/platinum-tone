@@ -75,7 +75,7 @@ export default function Home() {
             {[
               { title: "最先端の業界情報", desc: "全国どこにいても、最先端の声優業界情報を得ることができます。", image: "/assets/images/features1.webp" },
               { title: "月１回全体ミーティング", desc: "月１回のミーティングで、講師2人から直接アドバイスをもらえます。（アーカイブあり）", image: "/assets/images/features2.webp" },
-              { title: "Podcast配信", desc: "podcast「声優登竜門バックステージ」を聞くことができます。", image: "/assets/images/features3.webp" },
+              { title: "音声配信", desc: "「声優登竜門 backstage」を聞くことができます。", image: "/assets/images/features3.webp" },
               { title: "個別グループレッスンへの参加", desc: "オプション（別途料金）", image: "/assets/images/features4.webp" },
             ].map((item) => (
               <div key={item.title} className="card p-5">

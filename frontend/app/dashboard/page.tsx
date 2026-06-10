@@ -8,7 +8,7 @@ import RequireMember from '@/components/RequireMember'
 
 const MEMBER_CARDS = [
   { href: '/members/blog',    title: "What's 声優業界", desc: '声優になるためのナレッジ',        emoji: '📝' },
-  { href: '/members/podcast', title: '声優登竜門 バックステージ', desc: '会員限定音声',              emoji: '🎧' },
+  { href: '/members/podcast', title: '声優登竜門 backstage', desc: '会員限定音声',              emoji: '🎧' },
   { href: '/board',           title: '掲示板',           desc: '講師への質問・フィードバック',    emoji: '💬' },
 ]
 

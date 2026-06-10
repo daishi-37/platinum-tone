@@ -33,7 +33,7 @@ function BacktalkListContent() {
   return (
     <main className="max-w-4xl mx-auto px-6 py-12">
       <p className="text-text-sub text-xs tracking-widest uppercase mb-2">Members</p>
-      <h1 className="text-2xl font-bold text-text-main mb-2">声優登竜門 バックステージ</h1>
+      <h1 className="text-2xl font-bold text-text-main mb-2">声優登竜門 backstage</h1>
       <p className="text-text-sub text-sm mb-10">会員限定の音声コンテンツをお届けします。</p>
 
       {episodes.length === 0 ? (
