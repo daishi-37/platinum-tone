@@ -39,14 +39,14 @@ function BacktalkListContent() {
       {episodes.length === 0 ? (
         <p className="text-text-sub">音声を準備中です。</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {episodes.map((ep) => (
             <Link
               key={ep.id}
               href={`/members/podcast/${ep.slug}`}
               className="card overflow-hidden hover:shadow-md transition-shadow group"
             >
-              <div className="h-40 bg-section-bg flex items-center justify-center overflow-hidden relative">
+              <div className="aspect-square bg-section-bg flex items-center justify-center overflow-hidden relative">
                 {ep.thumbnail_url ? (
                   <img src={ep.thumbnail_url} alt={ep.title} className="w-full h-full object-cover" />
                 ) : (

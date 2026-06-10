@@ -54,8 +54,8 @@ export default function BlogDetailClient() {
       </Link>
 
       {post.thumbnail_url && (
-        <div className="rounded-xl overflow-hidden mb-6">
-          <img src={post.thumbnail_url} alt={post.title} className="w-full h-48 object-cover" />
+        <div className="rounded-xl overflow-hidden mb-6 mx-auto w-full max-w-sm aspect-square">
+          <img src={post.thumbnail_url} alt={post.title} className="w-full h-full object-cover" />
         </div>
       )}
 

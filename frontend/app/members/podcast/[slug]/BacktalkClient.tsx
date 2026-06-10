@@ -124,7 +124,7 @@ function HlsAudioPlayer({ src, poster }: { src: string; poster: string | null })
   return (
     <div className="rounded-xl overflow-hidden bg-section-bg mb-6 p-6">
       {poster && (
-        <img src={poster} alt="" className="w-full max-h-72 object-cover rounded-lg mb-4" />
+        <img src={poster} alt="" className="w-full max-w-sm aspect-square object-cover rounded-lg mb-4 mx-auto" />
       )}
       <audio
         ref={audioRef}

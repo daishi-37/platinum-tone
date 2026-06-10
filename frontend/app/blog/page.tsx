@@ -34,14 +34,14 @@ export default function BlogListPage() {
       ) : posts.length === 0 ? (
         <p className="text-text-sub">記事を準備中です。</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {posts.map((post) => (
             <Link
               key={post.id}
               href={`/blog/${post.slug}`}
               className="card overflow-hidden hover:shadow-md transition-shadow group"
             >
-              <div className="h-36 bg-section-bg flex items-center justify-center overflow-hidden">
+              <div className="aspect-square bg-section-bg flex items-center justify-center overflow-hidden">
                 {post.thumbnail_url ? (
                   <img src={post.thumbnail_url} alt={post.title} className="w-full h-full object-cover" />
                 ) : (

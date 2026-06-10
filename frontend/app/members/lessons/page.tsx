@@ -49,7 +49,7 @@ function LessonsContent() {
               className="card p-5 flex items-center gap-5 hover:shadow-md transition-shadow group"
             >
               {/* サムネイル */}
-              <div className="w-28 h-16 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden relative">
+              <div className="w-20 h-20 bg-gray-100 rounded-lg flex-shrink-0 overflow-hidden relative">
                 {lesson.thumbnail_url ? (
                   <img src={lesson.thumbnail_url} alt={lesson.title} className="w-full h-full object-cover" />
                 ) : (
