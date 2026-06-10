@@ -55,6 +55,11 @@ class AdminBacktalkController extends Controller
             $data['published_at'] = now();
         }
 
+        // slug を変更する場合は、HLSディレクトリ名も追従させる（音声が消えないように）
+        if (isset($data['slug']) && $data['slug'] !== $backtalk->slug) {
+            $this->renameHlsDir($backtalk->slug, $data['slug']);
+        }
+
         $backtalk->update($data);
 
         return response()->json($backtalk);
@@ -158,6 +163,23 @@ class AdminBacktalkController extends Controller
         }
 
         return $dir;
+    }
+
+    /**
+     * slug 変更時に storage/app/backtalk/{old}/ を {new}/ へリネームする
+     */
+    private function renameHlsDir(string $oldSlug, string $newSlug): void
+    {
+        if (!preg_match('/^[a-z0-9\-]+$/', $oldSlug) || !preg_match('/^[a-z0-9\-]+$/', $newSlug)) {
+            return;
+        }
+
+        $oldDir = storage_path('app/backtalk/' . $oldSlug);
+        $newDir = storage_path('app/backtalk/' . $newSlug);
+
+        if (is_dir($oldDir) && !is_dir($newDir)) {
+            @rename($oldDir, $newDir);
+        }
     }
 
     public function slugSuggestion(Request $request): JsonResponse

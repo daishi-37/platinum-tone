@@ -47,6 +47,11 @@ class AdminLessonController extends Controller
             'is_published'  => ['sometimes', 'boolean'],
         ]);
 
+        // slug を変更する場合は、HLSディレクトリ名も追従させる（動画が消えないように）
+        if (isset($data['slug']) && $data['slug'] !== $lesson->slug) {
+            $this->renameHlsDir($lesson->slug, $data['slug']);
+        }
+
         $lesson->update($data);
 
         return response()->json($lesson);
@@ -155,6 +160,23 @@ class AdminLessonController extends Controller
         }
 
         return $dir;
+    }
+
+    /**
+     * slug 変更時に storage/app/lessons/{old}/ を {new}/ へリネームする
+     */
+    private function renameHlsDir(?string $oldSlug, string $newSlug): void
+    {
+        if (!$oldSlug || !preg_match('/^[a-z0-9\-]+$/', $oldSlug) || !preg_match('/^[a-z0-9\-]+$/', $newSlug)) {
+            return;
+        }
+
+        $oldDir = storage_path('app/lessons/' . $oldSlug);
+        $newDir = storage_path('app/lessons/' . $newSlug);
+
+        if (is_dir($oldDir) && !is_dir($newDir)) {
+            @rename($oldDir, $newDir);
+        }
     }
 
     public function slugSuggestion(Request $request): JsonResponse
