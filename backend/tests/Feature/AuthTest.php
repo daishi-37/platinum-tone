@@ -12,6 +12,18 @@ class AuthTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // register / login / logout は session()->regenerate()/invalidate() を呼ぶ。
+        // 本番では SPA からのリクエストとして Sanctum のステートフルミドルウェア
+        // （StartSession 含む）が起動するため、テストでも Referer を付けて同経路を通す。
+        // CSRF はテスト対象外なので明示的に無効化する（本番では SPA が X-XSRF-TOKEN を送る）。
+        $this->withHeader('Referer', config('app.url'))
+             ->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class);
+    }
+
     // ─── 登録 ────────────────────────────────────────────────────────────
 
     public function test_user_can_register(): void

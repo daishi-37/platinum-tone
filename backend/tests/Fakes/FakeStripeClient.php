@@ -15,7 +15,7 @@ use Carbon\Carbon;
  *       subscriptionData: (object)['status' => 'active', 'trial_end' => null, 'cancel_at' => null]
  *   ));
  */
-class FakeStripeClient
+class FakeStripeClient extends \Stripe\StripeClient
 {
     public FakeCustomersService $customers;
     public FakeCheckoutService $checkout;
@@ -24,6 +24,10 @@ class FakeStripeClient
 
     public function __construct(?object $subscriptionData = null)
     {
+        // StripeController は型宣言 Stripe\StripeClient を要求するため継承する。
+        // 実際のAPIは呼ばないが、親コンストラクタには有効なダミーキーを渡す。
+        parent::__construct(['api_key' => 'sk_test_fake']);
+
         $this->customers    = new FakeCustomersService();
         $this->checkout     = new FakeCheckoutService();
         $this->billingPortal = new FakeBillingPortalService();

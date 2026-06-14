@@ -37,7 +37,7 @@ class SubscriptionAccessTest extends TestCase
 
     public function test_user_without_subscription_cannot_access_lessons(): void
     {
-        $user = User::factory()->create(['subscription_status' => null]);
+        $user = User::factory()->create(['subscription_status' => 'none']);
 
         $this->actingAs($user)
              ->getJson('/api/members/lessons')
@@ -46,7 +46,7 @@ class SubscriptionAccessTest extends TestCase
 
     public function test_user_without_subscription_cannot_access_podcast(): void
     {
-        $user = User::factory()->create(['subscription_status' => null]);
+        $user = User::factory()->create(['subscription_status' => 'none']);
 
         $this->actingAs($user)
              ->getJson('/api/members/podcast')
