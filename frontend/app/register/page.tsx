@@ -8,6 +8,10 @@ import { useAuth } from '@/lib/auth-context'
 
 type User = { id: number; name: string; email: string }
 
+// 新規登録の受付を一時停止したい場合は false に切り替える（true = 受付中）
+const REGISTRATION_OPEN = true
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function ComingSoonPage() {
   return (
     <main className="flex items-center justify-center min-h-screen px-4 py-12">
@@ -40,7 +44,6 @@ function ComingSoonPage() {
   )
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function RegisterContent() {
   const router = useRouter()
   const { refresh } = useAuth()
@@ -194,5 +197,5 @@ function RegisterContent() {
 }
 
 export default function RegisterPage() {
-  return <ComingSoonPage />
+  return REGISTRATION_OPEN ? <RegisterContent /> : <ComingSoonPage />
 }
