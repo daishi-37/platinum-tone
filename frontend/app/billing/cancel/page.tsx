@@ -13,7 +13,7 @@ export default function BillingCancelPage() {
 
         <p className="text-text-sub text-sm leading-relaxed mb-8">
           お支払い手続きが中断されました。<br />
-          いつでも再度お試しいただけます。7日間は無料でご利用いただけます。
+          いつでも再度お申し込みいただけます。
         </p>
 
         <Link

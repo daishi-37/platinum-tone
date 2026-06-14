@@ -42,8 +42,7 @@ class StripeController extends Controller
                 'quantity' => 1,
             ]],
             'subscription_data' => [
-                'trial_period_days' => 7,
-                'metadata'          => ['user_id' => $user->id],
+                'metadata' => ['user_id' => $user->id],
             ],
             'metadata'   => ['user_id' => $user->id],
             'success_url' => config('app.frontend_url') . '/billing/success?session_id={CHECKOUT_SESSION_ID}',
