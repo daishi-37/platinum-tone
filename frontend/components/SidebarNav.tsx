@@ -15,7 +15,7 @@ const PUBLIC_NAV: NavItem[] = [
   { type: 'link', href: '/#plan',        label: 'プラン・料金' },
   { type: 'link', href: '/#contents',    label: 'コンテンツ' },
   { type: 'link', href: '/blog',         label: "ブログ" },
-  { type: 'link', href: '/podcast',      label: 'Podcast' },
+  { type: 'link', href: '/podcast',      label: '声優登竜門' },
 ]
 
 const MEMBER_NAV: NavItem[] = [

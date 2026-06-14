@@ -2,6 +2,7 @@ import Image from "next/image";
 import HeroSection from "@/components/HeroSection";
 import PlanCTA from "@/components/PlanCTA";
 import FeaturedBlogPosts from "@/components/FeaturedBlogPosts";
+import FeaturedContent from "@/components/FeaturedContent";
 
 export default function Home() {
   return (
@@ -147,26 +148,22 @@ export default function Home() {
           <div className="grid sm:grid-cols-3 gap-8">
             <FeaturedBlogPosts />
 
-            {[
-              { label: "トレーニング", type: "動画" },
-              { label: "対談", type: "動画" },
-            ].map((sec) => (
-              <div key={sec.label}>
-                <h3 className="font-bold text-primary border-l-4 border-primary pl-3 mb-3 text-sm">{sec.label}</h3>
-                <div className="space-y-2">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="card p-3 flex gap-3 items-center hover:shadow-md transition-shadow cursor-pointer">
-                      <div className="w-16 h-12 rounded bg-section-bg flex-shrink-0" />
-                      <div>
-                        <span className="text-xs text-white bg-accent px-2 py-0.5 rounded-full">{sec.type}</span>
-                        <p className="text-xs font-medium text-primary mt-1">タイトルが入ります</p>
-                        <p className="text-xs text-text-sub">2026.02.20</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
+            <FeaturedContent
+              title="トレーニング(会員限定)"
+              badge="動画"
+              endpoint="/lessons/featured"
+              hrefBase="/members/lessons"
+              listHref="/members/lessons"
+              emoji="🎬"
+            />
+            <FeaturedContent
+              title="声優登竜門backstage(会員限定)"
+              badge="音声"
+              endpoint="/backtalk/featured"
+              hrefBase="/members/podcast"
+              listHref="/members/podcast"
+              emoji="🎙️"
+            />
           </div>
         </section>
 
@@ -181,6 +178,7 @@ export default function Home() {
           </div>
           <nav className="flex flex-wrap justify-center gap-6 text-xs text-white/70 mb-6">
             <a href="#" className="hover:text-white transition-colors">プライバシーポリシー</a>
+            <a href="/terms" className="hover:text-white transition-colors">利用規約</a>
             <a href="/tokusho" className="hover:text-white transition-colors">特定商取引法に基づく表記</a>
             <a href="#" className="hover:text-white transition-colors">お問い合わせ</a>
           </nav>

@@ -51,6 +51,10 @@ Route::prefix('voicedoor')->group(function () {
     Route::get('/{id}',  [ContentController::class, 'voicedoorEpisode']);
 });
 
+// トップページ用：最新コンテンツのメタ情報（認証不要・再生は会員限定）
+Route::get('/lessons/featured',  [ContentController::class, 'featuredLessons']);
+Route::get('/backtalk/featured', [ContentController::class, 'featuredBacktalk']);
+
 // ブログ本文の画像配信（認証不要）
 Route::get('/media/{filename}', [MediaController::class, 'show']);
 

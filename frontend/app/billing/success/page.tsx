@@ -37,7 +37,7 @@ export default function BillingSuccessPage() {
           </div>
           <div className="flex items-center gap-3 text-sm text-text-main">
             <span className="text-accent text-lg">✓</span>
-            <span>会員限定 Podcast・ブログ記事</span>
+            <span>会員限定 音声コンテンツ・ブログ記事</span>
           </div>
           <div className="flex items-center gap-3 text-sm text-text-main">
             <span className="text-accent text-lg">✓</span>

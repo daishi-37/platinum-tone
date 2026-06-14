@@ -382,4 +382,28 @@ class ContentController extends Controller
             ->firstOrFail();
         return response()->json($post);
     }
+
+    /**
+     * トップページ用：最新レッスン動画のメタ情報（認証不要）
+     * 再生は会員限定のため、タイトル・サムネ等のメタのみ返す。
+     */
+    public function featuredLessons(): JsonResponse
+    {
+        $lessons = Lesson::published()
+            ->limit(3)
+            ->get(['id', 'title', 'slug', 'thumbnail_url']);
+        return response()->json($lessons);
+    }
+
+    /**
+     * トップページ用：最新裏トークのメタ情報（認証不要）
+     * 再生は会員限定のため、タイトル・サムネ等のメタのみ返す。
+     */
+    public function featuredBacktalk(): JsonResponse
+    {
+        $episodes = BacktalkEpisode::published()
+            ->limit(3)
+            ->get(['id', 'title', 'slug', 'thumbnail_url', 'published_at']);
+        return response()->json($episodes);
+    }
 }
