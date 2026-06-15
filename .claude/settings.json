@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s https://tone-ac.com/billing/cancel/)",
+      "Bash(grep -q '^0$')"
+    ]
+  }
+}

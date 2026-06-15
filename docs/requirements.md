@@ -249,6 +249,19 @@ LP（トップページ）のフッターからリンクする静的ページ。
 
 ---
 
+### 3-12. SEO（サイトマップ・robots）
+
+| ファイル | URL | 生成方法 |
+|------|-----|------|
+| サイトマップ | `/sitemap.xml` | `frontend/app/sitemap.ts`（Next.js メタデータルート）。`next build` 時に本番API（`https://tone-ac.com/api/blog`・`/api/podcast`）から公開コンテンツ一覧を取得し、公開ページ＋ブログ記事＋公開ポッドキャストのURLを列挙。API取得失敗時は静的ページのみでビルド継続 |
+| robots.txt | `/robots.txt` | `frontend/app/robots.ts`。全クロール許可。`/admin/`・`/members/`・`/dashboard/`・`/billing/`・`/login/`・`/register/`・`/forgot-password/` を `Disallow`。管理ログインの秘匿パスは存在秘匿のため記載しない。`Sitemap:` 行で sitemap.xml を提示 |
+
+- サイトマップは**デプロイ（ビルド）のたびに最新コンテンツで再生成**される。
+- Google Search Console に sitemap URL を一度登録すれば、以降は Google が定期的に自動再クロールする（旧 sitemap ping API は 2023 年に廃止済みのため、能動的な再送信は不要）。
+- ベースURL・APIベースはそれぞれ環境変数 `NEXT_PUBLIC_SITE_URL`（既定 `https://tone-ac.com`）・`SITEMAP_API_BASE`（既定 `https://tone-ac.com/api`）で上書き可能。
+
+---
+
 ## 4. データモデル
 
 ### User
@@ -397,3 +410,4 @@ LP（トップページ）のフッターからリンクする静的ページ。
 | 管理画面（コンテンツ CRUD） | 実装済み |
 | 管理画面（ユーザー管理） | 実装済み |
 | 管理画面（掲示板管理） | 実装済み |
+| SEO（sitemap.xml / robots.txt 自動生成） | 実装済み |
