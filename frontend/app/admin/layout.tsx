@@ -14,6 +14,8 @@ const NAV = [
   { type: 'link',    href: '/admin/backtalk',      label: '声優登竜門 backstage' },
   { type: 'link',    href: '/admin/board',         label: '掲示板' },
   { type: 'link',    href: '/board',               label: '掲示板を見る' },
+  { type: 'section', label: '分析・レポート' },
+  { type: 'link',    href: '/admin/reports',       label: '週次レポート' },
   { type: 'section', label: '管理メニュー' },
   { type: 'link',    href: '/admin/users',         label: 'ユーザー管理' },
 ] as const
@@ -29,8 +31,29 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="h-screen w-full bg-slate-50 text-gray-900 flex overflow-hidden">
       {/* サイドバー */}
       <aside className="w-56 shrink-0 bg-white border-r border-gray-200 flex flex-col h-full">
-        <div className="px-5 py-5 border-b border-gray-200">
+        <div className="px-5 py-5 border-b border-gray-200 flex items-center justify-between gap-2">
           <span className="font-semibold text-primary">tone 管理</span>
+          <a
+            href="/"
+            className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-700 transition whitespace-nowrap"
+            title="サイトのトップページを開く"
+          >
+            サイトを見る
+            <svg
+              className="w-3 h-3"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+              <polyline points="15 3 21 3 21 9" />
+              <line x1="10" y1="14" x2="21" y2="3" />
+            </svg>
+          </a>
         </div>
         <nav className="flex-1 px-3 py-4 space-y-0.5 text-sm overflow-y-auto">
           {NAV.map((item, i) =>

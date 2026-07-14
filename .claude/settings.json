@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(curl -s https://tone-ac.com/billing/cancel/)",
-      "Bash(grep -q '^0$')"
+      "Bash(grep -q '^0$')",
+      "mcp__gsc-search__get_search_analytics",
+      "Bash(grep -n \"GSC_SITE_URL\\\\|gsc-search\\\\|tone-ac\" ~/.claude.json 2>/dev/null | head -20)",
+      "Read(//Users/daishi37/**)",
+      "mcp__gsc-search__list_gsc_sites"
     ]
   }
 }

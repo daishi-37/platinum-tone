@@ -10,6 +10,7 @@ export default function AdminDashboard() {
     { label: 'ブログ', desc: '記事の作成・編集・公開', href: '/admin/blog' },
     { label: 'ポッドキャスト', desc: 'エピソードの追加・編集', href: '/admin/podcast' },
     { label: 'レッスン動画', desc: 'トレーニング・対談の管理', href: '/admin/lessons' },
+    { label: '週次レポート', desc: 'アクセス解析の振り返りと提案', href: '/admin/reports' },
   ]
 
   return (

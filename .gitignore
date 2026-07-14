@@ -45,3 +45,4 @@ auth.json
 
 # encrypt-hls.sh の出力（暗号化HLS zip・ローカル生成物）
 /dist/
+.config/
